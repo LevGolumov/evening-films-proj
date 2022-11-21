@@ -3,6 +3,8 @@
   padding: 1rem;
   font-weight: bold;
   font-size: 1.25rem;
+  display:flex;
+  justify-content: space-between;
 }
 
 .task:last-of-type {

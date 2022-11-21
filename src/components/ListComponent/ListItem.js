@@ -1,6 +1,6 @@
-import classes from './FilmItem.module.css';
+import classes from './ListItem.module.css';
 
-const FilmItem = (props) => {
+const ListItem = (props) => {
   return <li className={classes.task}>
   <div>
   {props.children}
@@ -11,4 +11,4 @@ const FilmItem = (props) => {
   </li>
 };
 
-export default FilmItem;
+export default ListItem;

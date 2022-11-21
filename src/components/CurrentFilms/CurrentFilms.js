@@ -11,7 +11,7 @@ function CurrentFilms(props) {
       <div>
       <ul>
         {props.items.map((film) => (
-          <FilmItem key={film.id} onRemove={props.removeCurrentFilm.bind(null, film.id)}>{film.film}</FilmItem>
+          <FilmItem key={film.id} onRemove={props.removeCurrentFilm.bind(null, film)}>{film.film}</FilmItem>
         ))}
       </ul>
       {!!props.unwatchedFilmsList.length && <Button onClick={props.onNewFilmRequest}>Выбрать ещё</Button>}
