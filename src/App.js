@@ -1,15 +1,14 @@
-import { Fragment } from "react";
 import Header from "./components/PageComponents/Header";
-import FilmPage from "./pages/FilmsPage";
+import FilmsPage from "./pages/FilmsPage";
+import { Provider } from "react-redux";
+import store from "./store/filmsStore";
 
 function App() {
-
-
   return (
-    <Fragment>
-    <Header />
-    <FilmPage />
-    </Fragment>
+    <Provider store={store}>
+      <Header />
+      <FilmsPage />
+    </Provider>
   );
 }
 
