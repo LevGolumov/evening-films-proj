@@ -1,6 +1,7 @@
 import Section from "../UI/Section";
 import FilmForm from "./FilmForm";
 import useHttp from "../../hooks/use-http";
+import { DATABASE_URL } from "../../constants";
 
 const NewFilm = (props) => {
   const createFilm = (filmText, data) => {
@@ -16,7 +17,7 @@ const NewFilm = (props) => {
   const enterFilmHandler = async (filmText) => {
 
     submitFilm({
-      url: "https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/towatchfilms.json",
+      url: `${DATABASE_URL}/towatchfilms.json`,
       method: "POST",
       body: { film: filmText.trim() },
       headers: {

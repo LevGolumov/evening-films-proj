@@ -6,6 +6,7 @@ import useHttp from "../hooks/use-http";
 import Search from "../components/Search/Search";
 import { useSelector, useDispatch } from "react-redux";
 import { filmsActions } from "../store/filmsStore";
+import { DATABASE_URL } from "../constants";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
@@ -29,7 +30,7 @@ function ToWatchFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}.json`,
+          url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
         },
         transformFilms.bind(null, listName)
       );
@@ -41,7 +42,7 @@ function ToWatchFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}/${data.id}.json`,
+      url: `${DATABASE_URL}/${listName.toLowerCase()}/${data.id}.json`,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -64,7 +65,7 @@ function ToWatchFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}.json`,
+        url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
         method: "POST",
         body: { film: filmText },
         headers: {

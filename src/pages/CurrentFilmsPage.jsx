@@ -5,6 +5,7 @@ import useHttp from "../hooks/use-http";
 import { filmsActions } from "../store/filmsStore";
 import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import { useEffect } from "react";
+import { DATABASE_URL } from "../constants";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
@@ -35,7 +36,7 @@ function CurrentFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}.json`,
+          url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
         },
         transformFilms.bind(null, listName)
       );
@@ -61,7 +62,7 @@ function CurrentFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}/${
+      url: `${DATABASE_URL}/${listName.toLowerCase()}/${
         data.id
       }.json`,
       method: "DELETE",
@@ -74,7 +75,7 @@ function CurrentFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/${listName.toLowerCase()}.json`,
+        url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
         method: "POST",
         body: { film: filmText },
         headers: {
