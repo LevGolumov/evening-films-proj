@@ -19,7 +19,7 @@ const FilmForm = (props) => {
   return (
     <form className={classes.form} onSubmit={submitHandler}>
       <input type='text' ref={taskInputRef} />
-      <button>{props.loading ? 'Sending...' : 'Add Film'}</button>
+      <button>{props.loading ? 'Отправляю...' : 'Добавить'}</button>
     </form>
   );
 };

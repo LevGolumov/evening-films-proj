@@ -2,20 +2,17 @@ import { Fragment, useState, useEffect, useMemo } from "react";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
 import useHttp from "../hooks/use-http";
-import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
+// import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import Search from "../components/Search/Search";
 import { useSelector, useDispatch } from "react-redux";
 import { filmsActions } from "../store/filmsStore";
 
-function FilmsPage() {
+function ToWatchFilmsPage() {
   const dispatch = useDispatch();
-  const unwatchedFilms = useSelector((state) => state.films.unwatchedFilms);
-  const watchedFilms = useSelector((state) => state.films.watchedFilms);
-  const currentFilms = useSelector((state) => state.films.currentFilms);
-  const [popup, setPopup] = useState(false);
+  const toWatchFilms = useSelector((state) => state.films.toWatchFilms.list);
   const [queueSearch, setQueueSearch] = useState("");
 
-  const { sendRequests: fetchFilms } = useHttp();
+  const {isLoading, error, sendRequests: fetchFilms } = useHttp();
   const { sendRequests: removeFilm } = useHttp();
   const { sendRequests: submitFilm } = useHttp();
 
@@ -37,10 +34,10 @@ function FilmsPage() {
         transformFilms.bind(null, listName)
       );
     }
-    fetchLists("currentFilms");
-    fetchLists("watchedFilms");
-    fetchLists("unwatchedFilms");
-  }, [fetchFilms, dispatch]);
+    if (toWatchFilms.length === 0) {
+      fetchLists("toWatchFilms");
+    }
+  }, [fetchFilms, dispatch, toWatchFilms]);
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
@@ -55,18 +52,6 @@ function FilmsPage() {
 
   function filmAddHandler(listName, film) {
     dispatch(filmsActions.addFilm({ list: listName, film: film }));
-  }
-
-  function openModalHanler() {
-    setPopup(true);
-  }
-
-  function closeModalHanler() {
-    setPopup(false);
-  }
-
-  function chooseCurrentFilmHandler(film) {
-    moveFilmOver.bind(null, "unwatchedFilms", "currentFilms")
   }
 
   function createFilm(filmText, listName, data) {
@@ -90,12 +75,6 @@ function FilmsPage() {
     );
   }
 
-  function addFilmToCurrentsHandler(data) {
-    removeFilmHandler("unwatchedFilms", data);
-    postFilmHandler("currentFilms", data.film);
-    closeModalHanler();
-  }
-
   function moveFilmOver(prevListName, newListName, data) {
     console.log('I\'m in')
     removeFilmHandler(prevListName, data);
@@ -108,55 +87,30 @@ function FilmsPage() {
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
-      return unwatchedFilms;
+      return toWatchFilms;
     }
-    return [...unwatchedFilms].filter((film) =>
+    return [...toWatchFilms].filter((film) =>
       film.film.toLowerCase().includes(queueSearch.toLowerCase())
     );
-  }, [unwatchedFilms, queueSearch]);
+  }, [toWatchFilms, queueSearch]);
 
   return (
     <Fragment>
-      {popup && (
-        <NewCurrentFilm
-          onCloseModal={closeModalHanler}
-          onChooseFilm={chooseCurrentFilmHandler}
-          films={unwatchedFilms}
-          onAddFilm={addFilmToCurrentsHandler}
-        />
-      )}
-      <NewFilm onAddFilm={filmAddHandler.bind(null, "unwatchedFilms")} />
-      <ListComponent
-        header="Текущие фильмы"
-        items={currentFilms}
-        onNewFilmRequest={openModalHanler}
-        removeFilmHandler={moveFilmOver.bind(
-          null,
-          "currentFilms",
-          "watchedFilms"
-        )}
-        unwatchedFilmsList={unwatchedFilms}
-        listName="currentFilms"
-      />
-      <ListComponent
-        nothingInList="Вы не посмотрели ни одного фильма!"
-        header="Просмотренные фильмы"
-        listName="watchedFilms"
-        items={watchedFilms}
-        removeFilmHandler={removeFilmHandler.bind(null, "watchedFilms")}
-      />
+      <NewFilm onAddFilm={filmAddHandler.bind(null, "toWatchFilms")} />
       <Search value={queueSearch} onChange={handleQueueSearch} />
       <ListComponent
-        header={`Всего фильмов: ${unwatchedFilms.length}`}
+        header={`Всего фильмов: ${toWatchFilms.length}`}
+        loading={isLoading}
+        error={error}
         nothingInList="Фильмы не найдены. Пора их добавить!"
         items={sortedFilms}
-        listName="unwatchedFilms"
-        removeFilmHandler={removeFilmHandler.bind(null, "unwatchedFilms")}
-        toWatched={moveFilmOver.bind(null, "unwatchedFilms", "watchedFilms")}
-        toCurrent={moveFilmOver.bind(null, "unwatchedFilms", "currentFilms")}
+        listName="toWatchFilms"
+        removeFilmHandler={removeFilmHandler.bind(null, "toWatchFilms")}
+        toWatched={moveFilmOver.bind(null, "toWatchFilms", "watchedFilms")}
+        toCurrent={moveFilmOver.bind(null, "toWatchFilms", "currentFilms")}
       />
     </Fragment>
   );
 }
 
-export default FilmsPage;
+export default ToWatchFilmsPage;

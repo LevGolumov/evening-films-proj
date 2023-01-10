@@ -6,8 +6,10 @@ import Button from "../UI/Button";
 const ListComponent = (props) => {
   let filmList;
   let isUnwatchedList;
-  if (props.unwatchedFilmsList !== undefined) {
-    isUnwatchedList = !!props.unwatchedFilmsList.length;
+  let content;
+  
+  if (props.toWatchFilmsList !== undefined) {
+    isUnwatchedList = !!props.toWatchFilmsList.length;
     filmList = (
       <h2>
         В очереди ничего нет!
@@ -31,7 +33,7 @@ const ListComponent = (props) => {
       <div>
         <h2>{props.header}</h2>
         <ul>
-          {props.listName === "unwatchedFilms"
+          {props.listName === "toWatchFilms"
             ? reverseFilmList.map((item) => (
                 <ListItem
                   key={item.id}
@@ -43,6 +45,19 @@ const ListComponent = (props) => {
                   {item.film}
                 </ListItem>
               ))
+            : props.listName === "CurrentFilms" ?
+
+            reverseFilmList.map((item) => (
+              <ListItem
+                key={item.id}
+                listName={props.listName}
+                toWatched={props.toWatched.bind(null, item)}
+                onRemove={props.removeFilmHandler.bind(null, item)}
+              >
+                {item.film}
+              </ListItem>
+            ))
+            
             : reverseFilmList.map((item) => (
                 <ListItem
                   key={item.id}
@@ -61,9 +76,9 @@ const ListComponent = (props) => {
   }
 
   if (
-    props.unwatchedFilmsList &&
-    props.unwatchedFilmsList.length === 0 &&
-    props.items.length === 0
+    props.toWatchFilmsList &&
+    props.toWatchFilmsList.length === 0 &&
+    props.items.length === 0 && !props.loading
   ) {
     filmList = (
       <h2>
@@ -72,10 +87,14 @@ const ListComponent = (props) => {
     );
   }
 
-  let content = filmList;
+  content = filmList;
 
   if (props.loading) {
     content = "Загружаем фильмы...";
+  }
+
+  if (props.error) {
+    content = <button onClick={props.onFetch}>Try again</button>;
   }
 
   return (

@@ -16,7 +16,7 @@ const NewFilm = (props) => {
   const enterFilmHandler = async (filmText) => {
 
     submitFilm({
-      url: "https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/unwatchedfilms.json",
+      url: "https://evening-films-default-rtdb.europe-west1.firebasedatabase.app/towatchfilms.json",
       method: "POST",
       body: { film: filmText.trim() },
       headers: {

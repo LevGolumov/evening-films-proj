@@ -7,11 +7,29 @@ function NewCurrentFilm(props) {
   const [filmSuggestion, setFilmSuggestion] = useState(null);
   const findRandomFilm = useCallback(() => {
     const randomFilmItem =
-      props.films[Math.floor(Math.random() * props.films.length)];
+      props.toWatchFilms[Math.floor(Math.random() * props.toWatchFilms.length)];
     setFilmSuggestion(randomFilmItem);
-  }, [props.films]);
+  }, [props.toWatchFilms]);  
 
-  useEffect(() => findRandomFilm(), [findRandomFilm]);
+  useEffect(() => {
+    if (props.currentFilmsLength <= 4) {
+      findRandomFilm()
+    }
+  }, [findRandomFilm, props.currentFilmsLength])
+  
+  if (props.currentFilmsLength > 4) {
+    return <Modal onClick={props.onCloseModal}>
+    <h2 className={classes.title}>
+      Посмотрите то, что уже в списке!
+    </h2>
+    <div className={classes.buttons}>
+      <Button onClick={props.onCloseModal}>
+        Закрыть
+      </Button>
+    </div>
+  </Modal>
+  } 
+
   return (
     <Modal onClick={props.onCloseModal}>
       <h2 className={classes.title}>

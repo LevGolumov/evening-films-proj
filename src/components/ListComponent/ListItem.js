@@ -7,15 +7,19 @@ const ListItem = (props) => {
   {props.children}
   </div>
   <div className={classes.actions}>
-    {props.listName === "unwatchedFilms" &&
+    {props.listName === "toWatchFilms" &&
     <Fragment>
-    <button onClick={props.toWatched}>✔</button>
-    <button onClick={props.toCurrent}>👀</button>
+    <button onClick={props.toWatched} title='Добавить в просмотренные'>✔</button>
+    <button onClick={props.toCurrent} title='Добавить в текущие'>👀</button>
     </Fragment>
     }
-  <button onClick={props.onRemove}>−</button>
+    {props.listName === "CurrentFilms" &&
+    <button onClick={props.toWatched} title='Добавить в просмотренные'>✔</button>
+    }
+  <button onClick={props.onRemove} title='Удалить'>🗑</button>
   </div>
   </li>
 };
 
 export default ListItem;
+
