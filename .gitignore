@@ -17,3 +17,4 @@ sketch
 src/constants.js
 
 .env
+/build
