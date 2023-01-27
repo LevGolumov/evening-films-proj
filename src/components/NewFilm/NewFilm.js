@@ -1,9 +1,15 @@
 import Section from "../UI/Section";
 import FilmForm from "./FilmForm";
 import useHttp from "../../hooks/use-http";
-import { DATABASE_URL } from "../../constants";
+import { useContext } from "react";
+import { AuthContext } from "../context/auth-context";
 
 const NewFilm = (props) => {
+
+  const authCtx = useContext(AuthContext)
+  const uid = authCtx.uid
+  const token = authCtx.token
+
   const createFilm = (filmText, data) => {
 
     const generatedId = data.name; // firebase-specific => "name" contains generated id
@@ -17,7 +23,7 @@ const NewFilm = (props) => {
   const enterFilmHandler = async (filmText) => {
 
     submitFilm({
-      url: `${DATABASE_URL}/towatchfilms.json`,
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/towatchfilms.json?auth=${token}`,
       method: "POST",
       body: { film: filmText.trim() },
       headers: {

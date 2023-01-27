@@ -4,10 +4,16 @@ import { useSelector, useDispatch } from "react-redux";
 import { filmsActions } from "../store/filmsStore";
 import useHttp from "../hooks/use-http";
 import { Fragment, useEffect, useMemo, useState } from "react";
-import { DATABASE_URL } from "../constants";
+import { useContext } from "react";
+import { AuthContext } from "../components/context/auth-context";
 
 function WatchedFilmsPage() {
   const dispatch = useDispatch();
+  
+  const authCtx = useContext(AuthContext)
+  const uid = authCtx.uid
+  const token = authCtx.token
+
   const watchedFilms = useSelector((state) => state.films.watchedFilms.list);
   const areFilmsFetched = useSelector((state) => state.films.watchedFilms.isFetched);
   const [queueSearch, setQueueSearch] = useState("");
@@ -27,7 +33,7 @@ function WatchedFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
+          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,          
         },
         transformFilms.bind(null, listName)
       );
@@ -35,13 +41,13 @@ function WatchedFilmsPage() {
     if (!areFilmsFetched){
       fetchLists("watchedFilms");
     }
-  }, [fetchFilms, dispatch, areFilmsFetched]);
+  }, [fetchFilms, dispatch, areFilmsFetched, uid, token]);
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${DATABASE_URL}/${listName.toLowerCase()}/${
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}/${
         data.id
-      }.json`,
+      }.json?auth=${token}`,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

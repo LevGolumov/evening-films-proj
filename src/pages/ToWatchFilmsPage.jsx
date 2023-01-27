@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useMemo } from "react";
+import { Fragment, useState, useEffect, useMemo, useContext } from "react";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
 import useHttp from "../hooks/use-http";
@@ -6,12 +6,18 @@ import useHttp from "../hooks/use-http";
 import Search from "../components/Search/Search";
 import { useSelector, useDispatch } from "react-redux";
 import { filmsActions } from "../store/filmsStore";
-import { DATABASE_URL } from "../constants";
+import { AuthContext } from "../components/context/auth-context";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
   const toWatchFilms = useSelector((state) => state.films.toWatchFilms.list);
+  const areToWatchFilmsFetched = useSelector(
+    (state) => state.films.toWatchFilms.isFetched
+  );
   const [queueSearch, setQueueSearch] = useState("");
+  const authCtx = useContext(AuthContext)
+  const uid = authCtx.uid
+  const token = authCtx.token
 
   const {isLoading, error, sendRequests: fetchFilms } = useHttp();
   const { sendRequests: removeFilm } = useHttp();
@@ -19,6 +25,7 @@ function ToWatchFilmsPage() {
 
   useEffect(() => {
     const transformFilms = (listName, filmsObj) => {
+      console.log("In towatch useeffect")
       const loadedFilms = [];
 
       for (const filmKey in filmsObj) {
@@ -30,19 +37,21 @@ function ToWatchFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
+          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
         },
         transformFilms.bind(null, listName)
       );
     }
-    if (toWatchFilms.length === 0) {
+    if (!areToWatchFilmsFetched) {
       fetchLists("toWatchFilms");
     }
-  }, [fetchFilms, dispatch, toWatchFilms]);
+  }, [fetchFilms, dispatch, areToWatchFilmsFetched, uid, token]);
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${DATABASE_URL}/${listName.toLowerCase()}/${data.id}.json`,
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}/${
+        data.id
+      }.json?auth=${token}`,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -65,7 +74,7 @@ function ToWatchFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
+        url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {

@@ -1,16 +1,19 @@
 import ListComponent from "../components/ListComponent/ListComponent";
-import { Fragment, useState } from "react";
+import { Fragment, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useHttp from "../hooks/use-http";
 import { filmsActions } from "../store/filmsStore";
 import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import { useEffect } from "react";
-import { DATABASE_URL } from "../constants";
+import { AuthContext } from "../components/context/auth-context";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
   const currentFilms = useSelector((state) => state.films.currentFilms.list);
   const toWatchFilms = useSelector((state) => state.films.toWatchFilms.list);
+  const authCtx = useContext(AuthContext)
+  const uid = authCtx.uid
+  const token = authCtx.token
   const areCurrentFilmsFetched = useSelector(
     (state) => state.films.currentFilms.isFetched
   );
@@ -36,7 +39,7 @@ function CurrentFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
+          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
         },
         transformFilms.bind(null, listName)
       );
@@ -47,7 +50,7 @@ function CurrentFilmsPage() {
     } else if (!areCurrentFilmsFetched) {
       fetchLists("currentFilms");
     }
-  }, [fetchFilms, dispatch, areToWatchFilmsFetched, areCurrentFilmsFetched]);
+  }, [fetchFilms, dispatch, areToWatchFilmsFetched, areCurrentFilmsFetched, uid, token]);
 
   function filmAddHandler(listName, film) {
     dispatch(filmsActions.addFilm({ list: listName, film: film }));
@@ -62,9 +65,9 @@ function CurrentFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${DATABASE_URL}/${listName.toLowerCase()}/${
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}/${
         data.id
-      }.json`,
+      }.json?auth=${token}`,
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -75,7 +78,7 @@ function CurrentFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${DATABASE_URL}/${listName.toLowerCase()}.json`,
+        url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {

@@ -1,4 +1,24 @@
-.header{
+.header{    
+    background-color: #3FC1C9;
+}
+
+.header__nav{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 39.875rem;
+    margin: auto;
+    height: 3rem;
+}
+
+.header__nav--link{
+    text-decoration: none;
+    color: #F5F5F5;
+}
+
+.header__nav--link:hover{
+    
+    cursor:pointer; 
 }
 
 .header__buttons{

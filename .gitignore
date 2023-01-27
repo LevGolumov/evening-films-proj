@@ -15,3 +15,5 @@ thumb
 sketch
 
 src/constants.js
+
+.env
