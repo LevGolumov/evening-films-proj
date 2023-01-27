@@ -2,11 +2,12 @@ import { Fragment, useState, useEffect, useMemo, useContext } from "react";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
 import useHttp from "../hooks/use-http";
-// import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import Search from "../components/Search/Search";
 import { useSelector, useDispatch } from "react-redux";
 import { filmsActions } from "../store/filmsStore";
 import { AuthContext } from "../components/context/auth-context";
+import Pagination from "../components/Pagination/Pagination";
+import usePaginate from "../hooks/use-paginate";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
@@ -22,10 +23,10 @@ function ToWatchFilmsPage() {
   const {isLoading, error, sendRequests: fetchFilms } = useHttp();
   const { sendRequests: removeFilm } = useHttp();
   const { sendRequests: submitFilm } = useHttp();
+  const {currentPage, sliceTheList, setCurrentPage, pageNumbers} = usePaginate();
 
   useEffect(() => {
     const transformFilms = (listName, filmsObj) => {
-      console.log("In towatch useeffect")
       const loadedFilms = [];
 
       for (const filmKey in filmsObj) {
@@ -37,7 +38,7 @@ function ToWatchFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
+          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         },
         transformFilms.bind(null, listName)
       );
@@ -49,7 +50,7 @@ function ToWatchFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}/${
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
         data.id
       }.json?auth=${token}`,
       method: "DELETE",
@@ -74,7 +75,7 @@ function ToWatchFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,
+        url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {
@@ -97,12 +98,15 @@ function ToWatchFilmsPage() {
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
-      return toWatchFilms;
+      return [...toWatchFilms].reverse();
     }
     return [...toWatchFilms].filter((film) =>
       film.film.toLowerCase().includes(queueSearch.toLowerCase())
     );
   }, [toWatchFilms, queueSearch]);
+
+  const slicedList = useMemo(() => sliceTheList(sortedFilms), [sliceTheList, sortedFilms])
+  console.log(slicedList)
 
   return (
     <Fragment>
@@ -113,12 +117,13 @@ function ToWatchFilmsPage() {
         loading={isLoading}
         error={error}
         nothingInList="Фильмы не найдены. Пора их добавить!"
-        items={sortedFilms}
+        items={slicedList}
         listName="toWatchFilms"
         removeFilmHandler={removeFilmHandler.bind(null, "toWatchFilms")}
         toWatched={moveFilmOver.bind(null, "toWatchFilms", "watchedFilms")}
         toCurrent={moveFilmOver.bind(null, "toWatchFilms", "currentFilms")}
       />
+      <Pagination pageNumbers={pageNumbers} currentPage={currentPage} setCurrentPage={setCurrentPage} />
     </Fragment>
   );
 }

@@ -23,18 +23,18 @@ const ListComponent = (props) => {
   }
 
   if (props.items.length > 0) {
-    let reverseFilmList;
-    if (!isUnwatchedList) {
-      reverseFilmList = [...props.items].reverse();
-    } else {
-      reverseFilmList = [...props.items];
-    }
+    // let reverseFilmList;
+    // if (!isUnwatchedList) {
+    //   reverseFilmList = [...props.items].reverse();
+    // } else {
+    //   reverseFilmList = [...props.items];
+    // }
     filmList = (
       <div>
         <h2>{props.header}</h2>
         <ul>
           {props.listName === "toWatchFilms"
-            ? reverseFilmList.map((item) => (
+            ? props.items.map((item) => (
                 <ListItem
                   key={item.id}
                   listName={props.listName}
@@ -47,7 +47,7 @@ const ListComponent = (props) => {
               ))
             : props.listName === "CurrentFilms" ?
 
-            reverseFilmList.map((item) => (
+            props.items.map((item) => (
               <ListItem
                 key={item.id}
                 listName={props.listName}
@@ -58,7 +58,7 @@ const ListComponent = (props) => {
               </ListItem>
             ))
             
-            : reverseFilmList.map((item) => (
+            : props.items.map((item) => (
                 <ListItem
                   key={item.id}
                   listName={props.listName}

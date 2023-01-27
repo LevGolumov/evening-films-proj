@@ -33,7 +33,7 @@ function WatchedFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}.json?auth=${token}`,          
+          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,          
         },
         transformFilms.bind(null, listName)
       );
@@ -45,7 +45,7 @@ function WatchedFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/${listName.toLowerCase()}/${
+      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
         data.id
       }.json?auth=${token}`,
       method: "DELETE",

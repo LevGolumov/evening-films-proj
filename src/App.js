@@ -17,7 +17,7 @@ function App() {
   return (
     <Provider store={store}>
       <Layout>
-        <Suspense>
+        <Suspense fallback={<p>Загрузка...</p>}>
           <Routes>
             <Route path="*" element={<Navigate replace to={rootNavigaton} />} />
             {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
