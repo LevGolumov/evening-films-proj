@@ -46,6 +46,7 @@ function ToWatchFilmsPage() {
     if (!areToWatchFilmsFetched) {
       fetchLists("toWatchFilms");
     }
+    
   }, [fetchFilms, dispatch, areToWatchFilmsFetched, uid, token]);
 
   async function removeFilmHandler(listName, data) {
@@ -106,8 +107,6 @@ function ToWatchFilmsPage() {
   }, [toWatchFilms, queueSearch]);
 
   const slicedList = useMemo(() => sliceTheList(sortedFilms), [sliceTheList, sortedFilms])
-  console.log(slicedList)
-
   return (
     <Fragment>
       <NewFilm onAddFilm={filmAddHandler.bind(null, "toWatchFilms")} />

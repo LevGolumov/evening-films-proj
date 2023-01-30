@@ -60,7 +60,7 @@ function LoginForm() {
       })
       .then((data) => {
         if (isLogin){
-          loginCtx.login(data.idToken, data.localId);
+          loginCtx.login(data.idToken, data.expiresIn, data.localId, data.refreshToken);
           navigate("/")
         } else {
           emailInputRef.current.value = ''

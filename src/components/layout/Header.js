@@ -12,7 +12,7 @@ function Header() {
       <header className={classes.header}>
         <nav className={classes.header__nav}>
           <NavLink className={classes['header__nav--link']} to="/">
-            <div>ToWatch</div>
+            <div>ToBinge</div>
           </NavLink>
           <NavLink className={classes['header__nav--link']} to="/login">
             <div onClick={loginCtx.isLoggedIn ? loginCtx.logout : null}>{loginButtonText}</div>
