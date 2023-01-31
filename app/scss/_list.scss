@@ -1,0 +1,44 @@
+.list__header{
+    font-size: $font-large;
+    ;
+}
+
+.list-item {
+    border-bottom: 1px solid #ccc;
+    padding: 1rem;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
+    font-size: $font-main;
+
+    &:last-of-type {
+        border-bottom: none;
+    }
+    @include breakpoint-up(medium) {
+        flex-direction: row;
+    }
+
+    &__title {
+        text-align: center;
+        @include breakpoint-up(medium) {
+            text-align: left;
+            padding-right: 1rem;
+        }
+    }
+
+    &__actions {
+        display: flex;
+        margin-top: 1rem;
+        align-items: center;
+
+        & .button:not(:last-child) {
+            margin-right: 0.7rem;
+        }
+
+        @include breakpoint-up(medium) {
+            margin-top: 0;
+        }
+    }
+}

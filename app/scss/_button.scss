@@ -1,0 +1,38 @@
+@import "variables";
+
+// button {
+//     cursor: pointer;
+//     font: inherit;
+//     border: 2px solid $pink;
+//     background: $grey-white;
+//     color: black;
+//     padding: 0.5rem 2rem;
+// }
+
+// button:hover,
+// button:active {
+//     color: $grey-white;
+//       background-color: $pink;
+//       border-color: $pink;
+// }
+
+.button {
+    cursor: pointer;
+    font: inherit;
+    border: 2px solid $pink;
+    background: $grey-white;
+    color: black;
+    padding: 0.25rem 1rem;
+    border-radius: 20px;
+}
+
+.button:hover,
+.button:active {
+    color: $grey-white;
+      background-color: $pink;
+      border-color: $pink;
+}
+
+.button:focus {
+    outline: none;
+}

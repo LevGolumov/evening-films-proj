@@ -1,7 +1,5 @@
 import { useRef } from 'react';
 
-import classes from './FilmForm.module.css';
-
 const FilmForm = (props) => {
   const taskInputRef = useRef();
 
@@ -17,9 +15,9 @@ const FilmForm = (props) => {
   };
 
   return (
-    <form className={classes.form} onSubmit={submitHandler}>
-      <input type='text' ref={taskInputRef} />
-      <button>{props.loading ? 'Отправляю...' : 'Добавить'}</button>
+    <form className={"form"} onSubmit={submitHandler}>
+      <input  placeholder="Что желаете посмотреть?" className='input' type='text' ref={taskInputRef} />
+      <button className='button'>{props.loading ? 'Отправляю...' : 'Добавить'}</button>
     </form>
   );
 };

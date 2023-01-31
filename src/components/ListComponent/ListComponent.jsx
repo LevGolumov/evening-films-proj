@@ -31,7 +31,7 @@ const ListComponent = (props) => {
     // }
     filmList = (
       <div>
-        <h2>{props.header}</h2>
+        <h2 className="list__header">{props.header}</h2>
         <ul>
           {props.listName === "toWatchFilms"
             ? props.items.map((item) => (

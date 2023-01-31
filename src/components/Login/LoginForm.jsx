@@ -1,7 +1,6 @@
 import { useState, useRef, useContext } from "react";
 import { AuthContext } from "../context/auth-context";
 import { useNavigate } from "react-router-dom";
-import classes from "./LoginForm.module.css";
 
 function LoginForm() {
   const emailInputRef = useRef();
@@ -72,14 +71,14 @@ function LoginForm() {
   }
 
   return (
-    <section className={classes.auth}>
+    <section className={"auth"}>
       <h1>{isLogin ? "Вход" : "Регистрация"}</h1>
       <form onSubmit={submitHandler}>
-        <div className={classes.control}>
+        <div className={"control"}>
           <label htmlFor="email">Ваш Email</label>
           <input type="email" id="email" required ref={emailInputRef} />
         </div>
-        <div className={classes.control}>
+        <div className={"control"}>
           <label htmlFor="password">Ваш Пароль</label>
           <input
             type="password"
@@ -88,7 +87,7 @@ function LoginForm() {
             ref={passwordInputRef}
           />
         </div>
-        <div className={classes.actions}>
+        <div className={"actions"}>
           {!isLoading && (
             <button type="submit">
               {isLogin ? "Войти" : "Создать аккаунт"}
@@ -97,7 +96,7 @@ function LoginForm() {
           {isLoading && <p>Отправка...</p>}
           <button
             type="button"
-            className={classes.toggle}
+            className={"toggle"}
             onClick={switchAuthModeHandler}
           >
             {isLogin

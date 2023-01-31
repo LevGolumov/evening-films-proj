@@ -1,0 +1,31 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap');
+@import "variables";
+
+* {
+  box-sizing: border-box;
+  &::after,
+  &::before {
+      box-sizing: inherit;
+  }
+}
+
+html {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+body {
+  margin: 0;
+  background-color: $teal;
+}
+
+.container {
+  padding: 0 1.5rem;
+
+  @include breakpoint-up(medium) {
+
+      // max-width: 55rem;
+      width: 39.875rem;
+      // padding: 0;
+      margin: auto;
+  }
+}

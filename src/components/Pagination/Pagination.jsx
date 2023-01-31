@@ -1,5 +1,4 @@
 import React from "react";
-import classes from "./Pagination.module.css"
 
 export default function Pagination({
   setCurrentPage,
@@ -16,14 +15,14 @@ export default function Pagination({
   // }
 
   return (
-    <div className={`${classes.pagination} ${classes.container}`}>
+    <div className="pagination container">
       {pageNumbers.map((index) => {
         return (
           <button
           key={index}
           page={index}
           onClick={() => handlePageSelection(index)}
-            className={index === Number(currentPage) ? `${classes.btn} ${classes.btn__active}` : classes.btn}            
+            className={index === Number(currentPage) ? "pagination__btn pagination__btn--active" : "pagination__btn"}            
           >
             {index}
           </button>
