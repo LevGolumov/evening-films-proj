@@ -8,11 +8,16 @@
 
 html {
   font-family: "Noto Sans JP", sans-serif;
+  min-height: 100vh;
 }
 
 body {
   margin: 0;
   background-color: #3FC1C9;
+}
+
+main {
+  min-height: 75.5vh;
 }
 
 .container {
