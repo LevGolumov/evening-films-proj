@@ -13,10 +13,11 @@
     &__nav--link{
         text-decoration: none;
         color: $grey-white;
+        transition: color 0.2s ease-in-out;
 
         &:hover{
-    
-            cursor:pointer; 
+            cursor:pointer;
+            color: $teal;
         }
     }
 
@@ -34,7 +35,16 @@
         & a:not(:first-child){
             margin-top: 0.6rem;
         }
-    }
+
+        & .button{
+            border-color: $navy-blue;
+            &:hover, &--active{
+                color: white;
+                background-color: $navy-blue;
+                border-color: $navy-blue;
+              }
+        }
+    }    
 }
 
 .nav__title{

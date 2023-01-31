@@ -1,3 +1,4 @@
+@import "variables";
 .input {
     font: inherit;
     padding: 0.25rem;
@@ -6,10 +7,11 @@
     flex: 1;    
     background-color: $grey-white;
     width: 100%;
+    transition: all 0.2s ease-in-out;
 
     &:focus {
       outline: none;
-      border-color: $pink;
+      border-color: $navy-blue;
     }
   }
   

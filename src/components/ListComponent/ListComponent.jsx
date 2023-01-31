@@ -94,7 +94,7 @@ const ListComponent = (props) => {
   }
 
   if (props.error) {
-    content = <button onClick={props.onFetch}>Try again</button>;
+    content = <button className="button" onClick={props.onFetch}>Try again</button>;
   }
 
   return (

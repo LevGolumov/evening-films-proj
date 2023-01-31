@@ -42,9 +42,11 @@ main {
 .header__nav--link {
   text-decoration: none;
   color: #F5F5F5;
+  transition: color 0.2s ease-in-out;
 }
 .header__nav--link:hover {
   cursor: pointer;
+  color: #3FC1C9;
 }
 .header__buttons {
   display: flex;
@@ -61,6 +63,14 @@ main {
 .header__buttons a:not(:first-child) {
   margin-top: 0.6rem;
 }
+.header__buttons .button {
+  border-color: #364F6B;
+}
+.header__buttons .button:hover, .header__buttons .button--active {
+  color: white;
+  background-color: #364F6B;
+  border-color: #364F6B;
+}
 
 .nav__title {
   font-size: 1.5rem;
@@ -75,6 +85,7 @@ main {
   color: black;
   padding: 0.25rem 1rem;
   border-radius: 20px;
+  transition: all 0.2s ease-in-out;
 }
 
 .button:hover,
@@ -175,10 +186,11 @@ main {
   flex: 1;
   background-color: #F5F5F5;
   width: 100%;
+  transition: all 0.2s ease-in-out;
 }
 .input:focus {
   outline: none;
-  border-color: #FC5185;
+  border-color: #364F6B;
 }
 
 .search {
@@ -196,7 +208,6 @@ main {
   text-align: center;
   color: #F5F5F5;
 }
-
 .auth h1 {
   text-align: center;
   color: #F5F5F5;
@@ -205,14 +216,12 @@ main {
 .control {
   margin-bottom: 0.5rem;
 }
-
 .control label {
   display: block;
   color: #F5F5F5;
   font-weight: bold;
   margin-bottom: 0.5rem;
 }
-
 .control input {
   font: inherit;
   background-color: #f1e1fc;
@@ -230,7 +239,6 @@ main {
   flex-direction: column;
   align-items: center;
 }
-
 .actions button {
   cursor: pointer;
   font: inherit;
@@ -239,24 +247,23 @@ main {
   border: 1px solid #3FC1C9;
   border-radius: 4px;
   padding: 0.5rem 2.5rem;
+  transition: all 0.2s ease-in-out;
 }
-
 .actions button:hover {
-  background-color: #34a3a8;
-  border-color: #34a3a8;
+  background-color: #42b2b8;
+  border-color: #42b2b8;
 }
-
 .actions .toggle {
   margin-top: 1rem;
   background-color: transparent;
   color: #3FC1C9;
   border: none;
   padding: 0.15rem 1.5rem;
+  transition: all 0.2s ease-in-out;
 }
-
 .actions .toggle:hover {
   background-color: transparent;
-  color: #34a3a8;
+  color: #42b2b8;
 }
 
 .pagination {
