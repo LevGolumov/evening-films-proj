@@ -8,7 +8,7 @@ function Footer() {
         <span className="footer__links">
           <a
             className="footer__link"
-            href="https://github.com/LevGolumov/"
+            href="https://github.com/LevGolumov/evening-films-proj"
             rel="noreferrer"
             target="_blank"
           >
