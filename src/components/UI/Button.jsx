@@ -2,7 +2,7 @@ function Button(props) {
   return (
     <button
       type={props.type || 'button'}
-      className={'button'}
+      className={props.className ? `button ${props.className}` : `button`}
       onClick={props.onClick}
     >
       {props.children}

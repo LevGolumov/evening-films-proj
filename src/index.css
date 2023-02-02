@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;700&display=swap");
 * {
   box-sizing: border-box;
 }
@@ -7,17 +7,26 @@
 }
 
 html {
-  font-family: "Noto Sans JP", sans-serif;
-  min-height: 100vh;
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 500;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
 }
 
 body {
   margin: 0;
+  padding: 0;
   background-color: #3FC1C9;
+}
+body #root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 main {
-  min-height: 75.5vh;
+  flex-grow: 1;
 }
 
 .container {
@@ -43,6 +52,7 @@ main {
   text-decoration: none;
   color: #F5F5F5;
   transition: color 0.2s ease-in-out;
+  width: 100px;
 }
 .header__nav--link:hover {
   cursor: pointer;
@@ -63,6 +73,12 @@ main {
 .header__buttons a:not(:first-child) {
   margin-top: 0.6rem;
 }
+@media (min-width: 40em) {
+  .header__buttons a:not(:first-child) {
+    flex-direction: row;
+    margin-top: 0;
+  }
+}
 .header__buttons .button {
   border-color: #364F6B;
 }
@@ -70,6 +86,19 @@ main {
   color: white;
   background-color: #364F6B;
   border-color: #364F6B;
+}
+.header__langChoise {
+  color: #F5F5F5;
+  transition: color 0.2s ease-in-out;
+  text-align: center;
+  width: 100px;
+}
+.header__langChoise:hover {
+  cursor: pointer;
+  color: #3FC1C9;
+}
+.header__logout {
+  text-align: right;
 }
 
 .nav__title {
@@ -347,6 +376,9 @@ main {
   color: #F5F5F5;
   text-align: center;
   padding: 1rem 0;
+  position: relative;
+  width: 100%;
+  z-index: 100;
 }
 .footer p {
   margin: 0;

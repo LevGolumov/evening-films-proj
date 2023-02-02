@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import store from "./store/filmsStore";
 import { AuthContext } from "./components/context/auth-context";
 import { Navigate, Route, Routes } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ToWatchFilmsPage = React.lazy(() => import("./pages/ToWatchFilmsPage"));
 const WatchedFilmsPage = React.lazy(() => import("./pages/WatchedFilmsPage"));
@@ -14,10 +15,11 @@ function App() {
   const loginCtx = useContext(AuthContext);
   const isLoggedIn = loginCtx.isLoggedIn;
   const rootNavigaton = isLoggedIn ? "/to-watch-films" : "/login";
+  const {t} = useTranslation()
   return (
     <Provider store={store}>
       <Layout>
-        <Suspense fallback={<p>Загрузка...</p>}>
+        <Suspense fallback={<p>{t("techActions.loading")}...</p>}>
           <Routes>
             <Route path="*" element={<Navigate replace to={rootNavigaton} />} />
             {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}

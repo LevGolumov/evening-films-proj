@@ -24,6 +24,9 @@ const filmsSlice = createSlice({
       state[action.payload.list].list = [...action.payload.films];
       state[action.payload.list].isFetched = true;
     },
+    logout(state){
+      return state = {...filmsInitialState}
+    }
   },
 });
 

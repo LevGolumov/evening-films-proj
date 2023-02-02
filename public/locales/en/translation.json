@@ -1,0 +1,78 @@
+{
+    "login":{
+        "login":"Login",
+        "enterEmail": "Your Email",
+        "enterPswd": "Your Password",
+        "loginBtn": "Login",
+        "newAcc": "Create a new account",
+        "forgotPwd": "Forgot your password?"
+    },
+    "signUp":{
+        "signUp": "Sign Up",
+        "enterEmail": "Your Email",
+        "enterPswd": "Your Password",
+        "signUpBtn": "Create an Account",
+        "existAcc": "Login with existing account"
+    },
+    "header":{
+        "login":"Login",
+        "logout":"Logout"
+    },
+    "techActions":{
+        "loading":"Loading",
+        "sending":"Sending",
+        "tryAgain": "Try Again",
+        "close":"Close",
+        "defaultError":"Something went wrong"
+    },
+    "lists":{
+        "toWatch": "To Watch",
+        "current":"Current",
+        "watched":"Watched"
+    },
+    "pages":{
+        "toWatchList":{
+            "amount": "Total number of movies",
+            "empty":"Movies not found. Time to add some!",
+            "found": "Found movies"
+        },
+        "currentList":{
+            "header":"Current movies",
+            "empty":{
+                "header":"The list is empty",
+                "btn":"Choose a new movie",
+                "nothingness":{
+                    "1":"There are no movies in your list!",
+                    "2":"Add something first!"
+                }
+            },
+            "notEmpty":{
+                "btn":"Choose more"
+            }
+        },
+        "watchedList":{
+            "header":"Watched movies",
+            "nothingInList":"You didn't watch any movie!"
+        }
+    },
+    "search":{
+        "search":"Search"
+    },
+    "addNewFilm":{
+        "placeholder":"What do you wish to watch?",
+        "btn":"Add"
+    },
+    "listComponent":{
+        "listBtns":{
+            "addToCurrent":"Add to Current",
+            "addToWatched":"Add to Watched",
+            "addToFavorite":"Add to Favorite",
+            "delete":"Delete"
+        }
+    },
+    "newCurrentFilm":{
+        "enough":"Watch something from your list first!",
+        "another":"Another one",
+        "chooseThis":"Choose this one"
+    }
+}

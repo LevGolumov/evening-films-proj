@@ -2,6 +2,7 @@ import Modal from "../UI/Modal";
 import { useState, useEffect, useCallback } from "react";
 import Button from "../UI/Button";
 import classes from "./NewCurrentFilm.module.css";
+import { useTranslation } from "react-i18next";
 
 function NewCurrentFilm(props) {
   const [filmSuggestion, setFilmSuggestion] = useState(null);
@@ -10,6 +11,7 @@ function NewCurrentFilm(props) {
       props.toWatchFilms[Math.floor(Math.random() * props.toWatchFilms.length)];
     setFilmSuggestion(randomFilmItem);
   }, [props.toWatchFilms]);  
+  const {t} = useTranslation()
 
   useEffect(() => {
     if (props.currentFilmsLength <= 4) {
@@ -20,11 +22,11 @@ function NewCurrentFilm(props) {
   if (props.currentFilmsLength > 4) {
     return <Modal onClick={props.onCloseModal}>
     <h2 className={classes.title}>
-      Посмотрите то, что уже в списке!
+      {t("newCurrentFilm.enough")}
     </h2>
     <div className={classes.buttons}>
       <Button onClick={props.onCloseModal}>
-        Закрыть
+        {t("techActions.close")}
       </Button>
     </div>
   </Modal>
@@ -36,9 +38,9 @@ function NewCurrentFilm(props) {
         {filmSuggestion === null ? "Nothing" : filmSuggestion.film}
       </h2>
       <div className={classes.buttons}>
-        <Button onClick={findRandomFilm}>Другой вариант</Button>
+        <Button onClick={findRandomFilm}>{t("newCurrentFilm.another")}</Button>
         <Button onClick={props.onAddFilm.bind(null, filmSuggestion)}>
-          Смотреть этот
+        {t("newCurrentFilm.chooseThis")}
         </Button>
       </div>
     </Modal>

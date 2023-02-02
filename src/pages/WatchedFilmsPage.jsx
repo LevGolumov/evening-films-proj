@@ -6,6 +6,7 @@ import useHttp from "../hooks/use-http";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useContext } from "react";
 import { AuthContext } from "../components/context/auth-context";
+import { useTranslation } from "react-i18next";
 
 function WatchedFilmsPage() {
   const dispatch = useDispatch();
@@ -16,7 +17,8 @@ function WatchedFilmsPage() {
 
   const watchedFilms = useSelector((state) => state.films.watchedFilms.list);
   const areFilmsFetched = useSelector((state) => state.films.watchedFilms.isFetched);
-  const [queueSearch, setQueueSearch] = useState("");
+  const [queueSearch, setQueueSearch] = useState("");  
+  const [foundAmount, setFoundAmount] = useState(0)
   const { sendRequests: removeFilm } = useHttp();
   const { isLoading, error, sendRequests: fetchFilms } = useHttp();
 
@@ -58,25 +60,33 @@ function WatchedFilmsPage() {
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
-      return watchedFilms;
+      setFoundAmount(0)
+      return [...watchedFilms].reverse();
     }
-    return [...watchedFilms].filter((film) =>
-      film.film.toLowerCase().includes(queueSearch.toLowerCase())
-    );
+
+    const sorted = [...watchedFilms].filter((film) =>
+    film.film.toLowerCase().includes(queueSearch.toLowerCase()))
+    setFoundAmount([...sorted].length)
+    return sorted
   }, [watchedFilms, queueSearch]);
 
   function handleQueueSearch(event) {
     setQueueSearch(event.target.value);
   }
 
+  const {t} = useTranslation()
+
   return (
     <Fragment>
       <Search value={queueSearch} onChange={handleQueueSearch} />
       <ListComponent
-        nothingInList="Вы не посмотрели ни одного фильма!"
+      
+      found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
+      isSearched = {!!foundAmount}
+        nothingInList={t("pages.watchedList.nothingInList")}
         loading={isLoading}
         error={error}
-        header="Просмотренные фильмы"
+        header={t("pages.watchedList.header")}
         listName="watchedFilms"
         items={sortedFilms}
         removeFilmHandler={removeFilmHandler.bind(null, "watchedFilms")}

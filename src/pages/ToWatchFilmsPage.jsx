@@ -8,6 +8,7 @@ import { filmsActions } from "../store/filmsStore";
 import { AuthContext } from "../components/context/auth-context";
 import Pagination from "../components/Pagination/Pagination";
 import usePaginate from "../hooks/use-paginate";
+import { useTranslation } from "react-i18next";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
@@ -16,6 +17,8 @@ function ToWatchFilmsPage() {
     (state) => state.films.toWatchFilms.isFetched
   );
   const [queueSearch, setQueueSearch] = useState("");
+  // const [isSearched, setIsSearched] = useState(false);
+  const [foundAmount, setFoundAmount] = useState(0)
   const authCtx = useContext(AuthContext)
   const uid = authCtx.uid
   const token = authCtx.token
@@ -88,41 +91,55 @@ function ToWatchFilmsPage() {
   }
 
   function moveFilmOver(prevListName, newListName, data) {
-    console.log('I\'m in')
     removeFilmHandler(prevListName, data);
     postFilmHandler(newListName, data.film)
   }
 
   function handleQueueSearch(event) {
     setQueueSearch(event.target.value);
+    // if (!isSearched){
+    //   setIsSearched(true)
+    // }
+
+    // if (event.target.value === ""){
+    //   setIsSearched(false)
+    // }
   }
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
+      setFoundAmount(0)
       return [...toWatchFilms].reverse();
     }
-    return [...toWatchFilms].filter((film) =>
-      film.film.toLowerCase().includes(queueSearch.toLowerCase())
-    );
+    const sorted = [...toWatchFilms].filter((film) =>
+    film.film.toLowerCase().includes(queueSearch.toLowerCase()))
+    setFoundAmount([...sorted].length)
+    return sorted    
   }, [toWatchFilms, queueSearch]);
 
+
   const slicedList = useMemo(() => sliceTheList(sortedFilms), [sliceTheList, sortedFilms])
+  
+  const {t} = useTranslation()
+  
   return (
     <Fragment>
       <NewFilm onAddFilm={filmAddHandler.bind(null, "toWatchFilms")} />
       <Search value={queueSearch} onChange={handleQueueSearch} />
       <ListComponent
-        header={`Всего фильмов: ${toWatchFilms.length}`}
+        header={`${t("pages.toWatchList.amount")}: ${toWatchFilms.length}`}
+        found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
+        isSearched = {!!foundAmount}
         loading={isLoading}
         error={error}
-        nothingInList="Фильмы не найдены. Пора их добавить!"
+        nothingInList={t("pages.toWatchList.empty")}
         items={slicedList}
         listName="toWatchFilms"
         removeFilmHandler={removeFilmHandler.bind(null, "toWatchFilms")}
         toWatched={moveFilmOver.bind(null, "toWatchFilms", "watchedFilms")}
         toCurrent={moveFilmOver.bind(null, "toWatchFilms", "currentFilms")}
       />
-      <Pagination pageNumbers={pageNumbers} currentPage={currentPage} setCurrentPage={setCurrentPage} />
+      {pageNumbers.length > 1 && <Pagination pageNumbers={pageNumbers} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
     </Fragment>
   );
 }

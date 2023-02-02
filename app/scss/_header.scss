@@ -13,7 +13,8 @@
     &__nav--link{
         text-decoration: none;
         color: $grey-white;
-        transition: color 0.2s ease-in-out;
+        transition: color 0.2s ease-in-out;        
+        width: 100px;
 
         &:hover{
             cursor:pointer;
@@ -34,6 +35,10 @@
 
         & a:not(:first-child){
             margin-top: 0.6rem;
+            @include breakpoint-up(medium){
+                flex-direction: row;
+                margin-top: 0;
+            }
         }
 
         & .button{
@@ -44,7 +49,23 @@
                 border-color: $navy-blue;
               }
         }
-    }    
+    }   
+    
+    &__langChoise{
+        color: $grey-white;
+        transition: color 0.2s ease-in-out;
+        text-align: center;
+        width: 100px;
+        
+        &:hover{
+            cursor:pointer;
+            color: $teal;
+        }
+    }
+
+    &__logout{
+        text-align: right;
+    }
 }
 
 .nav__title{

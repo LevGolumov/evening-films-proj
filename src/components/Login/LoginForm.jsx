@@ -1,6 +1,7 @@
 import { useState, useRef, useContext } from "react";
 import { AuthContext } from "../context/auth-context";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function LoginForm() {
   const emailInputRef = useRef();
@@ -9,6 +10,7 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const loginCtx = useContext(AuthContext);
   const navigate = useNavigate();
+  const {t} = useTranslation()
 
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
@@ -49,7 +51,7 @@ function LoginForm() {
           return res.json();
         } else {
           return res.json().then((data) => {
-            let errorMessage = "Что-то пошло не так";
+            let errorMessage = t("techActions.defaultError");
             if (data && data.error && data.error.message) {
               errorMessage = data.error.message;
             }
@@ -72,14 +74,14 @@ function LoginForm() {
 
   return (
     <section className={"auth"}>
-      <h1>{isLogin ? "Вход" : "Регистрация"}</h1>
+      <h1>{isLogin ? t("login.login") : t("signUp.signUp")}</h1>
       <form onSubmit={submitHandler}>
         <div className={"control"}>
-          <label htmlFor="email">Ваш Email</label>
+          <label htmlFor="email">{t("login.enterEmail")}</label>
           <input type="email" id="email" required ref={emailInputRef} />
         </div>
         <div className={"control"}>
-          <label htmlFor="password">Ваш Пароль</label>
+          <label htmlFor="password">{t("login.enterPswd")}</label>
           <input
             type="password"
             id="password"
@@ -90,18 +92,18 @@ function LoginForm() {
         <div className={"actions"}>
           {!isLoading && (
             <button type="submit">
-              {isLogin ? "Войти" : "Создать аккаунт"}
+              {isLogin ? t("login.loginBtn") : t("signUp.signUpBtn")}
             </button>
           )}
-          {isLoading && <p>Отправка...</p>}
+          {isLoading && <p>{t("techActions.sending")}...</p>}
           <button
             type="button"
             className={"toggle"}
             onClick={switchAuthModeHandler}
           >
             {isLogin
-              ? "Создать новый аккаунт"
-              : "Войти с существующим аккаунтом"}
+              ? t("login.newAcc")
+              : t("signUp.existAcc")}
           </button>
         </div>
       </form>

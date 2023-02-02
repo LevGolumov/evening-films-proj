@@ -1,0 +1,77 @@
+{
+    "login":{
+        "login":"Войти",
+        "enterEmail": "Ваш Email",
+        "enterPswd": "Ваш Пароль",
+        "loginBtn": "Войти",
+        "newAcc": "Создать новый аккаунт",
+        "forgotPwd": "Забыли пароль?"
+    },
+    "signUp":{
+        "signUp": "Регистрация",
+        "signUpBtn": "Создать аккаунт",
+        "existAcc": "Войти с существующим аккаунтом"
+    },
+    "header":{
+        "login":"Войти",
+        "logout":"Выйти"
+    },
+    "techActions":{
+        "loading":"Загрузка",
+        "sending":"Отправка",
+        "tryAgain": "Ещё раз",
+        "close":"Закрыть",
+        "defaultError":"Что-то пошло не так"
+    },
+    "lists":{
+        "toWatch": "На Просмотр",
+        "current":"Текущие",
+        "watched":"Просмотренные"
+    },
+    "pages":{
+        "toWatchList":{
+            "amount": "Всего фильмов",
+            "empty":"Фильмы не найдены. Пора их добавить!",
+            "found": "Найдено фильмов"
+        },
+        "currentList":{
+            "header":"Текущие фильмы",
+            "empty":{
+                "header":"В очереди ничего нет!",
+                "btn":"Выбери новый фильм",
+                "nothingness":{
+                    "1":"Нет фильмов на просмотр!",
+                    "2":"Сначала добавьте что-то!"
+                }
+            },
+            "notEmpty":{
+                "btn":"Выбрать ещё"
+            }
+        },
+        "watchedList":{
+            "header":"Просмотренные фильмы",
+            "nothingInList":"Вы не посмотрели ни одного фильма!"
+        }
+    },
+    "search":{
+        "search":"Поиск"
+    },
+    "addNewFilm":{
+        "placeholder":"Что желаете посмотреть?",
+        "btn":"Добавить"
+    },
+    "listComponent":{
+        "listBtns":{
+            "addToCurrent":"Добавить в текущие",
+            "addToWatched":"Добавить в просмотренные",
+            "addToFavorite":"Добавить в любимые",
+            "delete":"Удалить"
+        }
+    },
+    "newCurrentFilm":{
+        "enough":"Посмотрите то, что уже в списке!",
+        "another":"Другой вариант",
+        "chooseThis":"Смотреть этот"
+    }
+
+}

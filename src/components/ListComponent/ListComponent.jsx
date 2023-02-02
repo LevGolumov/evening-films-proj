@@ -2,19 +2,21 @@ import Section from "../UI/Section";
 import ListItem from "./ListItem";
 import classes from "./ListComponent.module.css";
 import Button from "../UI/Button";
+import { useTranslation } from "react-i18next";
 
 const ListComponent = (props) => {
   let filmList;
   let isUnwatchedList;
   let content;
+  const {t} = useTranslation()
   
   if (props.toWatchFilmsList !== undefined) {
     isUnwatchedList = !!props.toWatchFilmsList.length;
     filmList = (
       <h2>
-        В очереди ничего нет!
+        {t("pages.currentList.empty.header")}
         <br />{" "}
-        <Button onClick={props.onNewFilmRequest}>Выбери новый фильм</Button>
+        <Button onClick={props.onNewFilmRequest}>{t("pages.currentList.empty.btn")}</Button>
       </h2>
     );
   } else {
@@ -32,6 +34,7 @@ const ListComponent = (props) => {
     filmList = (
       <div>
         <h2 className="list__header">{props.header}</h2>
+        {props.isSearched && <h3>{props.found}</h3>}
         <ul>
           {props.listName === "toWatchFilms"
             ? props.items.map((item) => (
@@ -69,7 +72,7 @@ const ListComponent = (props) => {
               ))}
         </ul>
         {isUnwatchedList && (
-          <Button onClick={props.onNewFilmRequest}>Выбрать ещё</Button>
+          <Button onClick={props.onNewFilmRequest}>{t("pages.currentList.notEmpty.btn")}</Button>
         )}
       </div>
     );
@@ -82,7 +85,7 @@ const ListComponent = (props) => {
   ) {
     filmList = (
       <h2>
-        Нет фильмов на просмотр! <br /> Сначала добавь что-то!
+        {t("pages.currentList.empty.nothingness.1")} <br /> {t("pages.currentList.empty.nothingness.2")}
       </h2>
     );
   }
@@ -90,11 +93,11 @@ const ListComponent = (props) => {
   content = filmList;
 
   if (props.loading) {
-    content = "Загружаем фильмы...";
+    content = t("techActions.loading") + "...";
   }
 
   if (props.error) {
-    content = <button className="button" onClick={props.onFetch}>Try again</button>;
+    content = <button className="button" onClick={props.onFetch}>{t("techActions.tryAgain")}</button>;
   }
 
   return (

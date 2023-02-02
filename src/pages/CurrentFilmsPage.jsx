@@ -6,6 +6,7 @@ import { filmsActions } from "../store/filmsStore";
 import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import { useEffect } from "react";
 import { AuthContext } from "../components/context/auth-context";
+import { useTranslation } from "react-i18next";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
@@ -108,7 +109,7 @@ function CurrentFilmsPage() {
     postFilmHandler("currentFilms", data.film);
     closeModalHanler();
   }
-
+  const {t} = useTranslation()
   return (
     <Fragment>
       {popup && (
@@ -121,7 +122,7 @@ function CurrentFilmsPage() {
         />
       )}
       <ListComponent
-        header="Текущие фильмы"
+        header={t("pages.currentList.header")}
         loading={isLoading}
         error={error}
         items={currentFilms}
