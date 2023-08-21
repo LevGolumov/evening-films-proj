@@ -16,7 +16,7 @@ function Header() {
     : t("header.login");
   
   let chosenLang = localStorage.getItem("i18nextLng")
-  if (chosenLang === "ru-RU"){
+  if (chosenLang === "ru-RU" || chosenLang === "ru"){
     chosenLang = "ru"
   } else {
     chosenLang = "en"

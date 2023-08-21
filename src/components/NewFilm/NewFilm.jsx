@@ -23,7 +23,7 @@ const NewFilm = (props) => {
   const enterFilmHandler = async (filmText) => {
 
     submitFilm({
-      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/towatchfilms.json?auth=${token}`,
+      url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/towatchfilms.json?auth=${token}`,
       method: "POST",
       body: { film: filmText.trim() },
       headers: {

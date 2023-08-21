@@ -41,7 +41,7 @@ function ToWatchFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+          url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         },
         transformFilms.bind(null, listName)
       );
@@ -54,7 +54,7 @@ function ToWatchFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
+      url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
         data.id
       }.json?auth=${token}`,
       method: "DELETE",
@@ -79,7 +79,7 @@ function ToWatchFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${process.env.REACT_APP_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+        url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {

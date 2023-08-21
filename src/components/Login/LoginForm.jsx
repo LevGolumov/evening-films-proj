@@ -27,11 +27,11 @@ function LoginForm() {
     let getSecureToken
     if (isLogin) {
       url =
-        process.env.REACT_APP_FIREBASE_SIGNIN + process.env.REACT_APP_AUTH_API;
+        import.meta.env.VITE_FIREBASE_SIGNIN + import.meta.env.VITE_AUTH_API;
         getSecureToken = true
     } else {
       url =
-        process.env.REACT_APP_FIREBASE_SIGNUP + process.env.REACT_APP_AUTH_API;
+        import.meta.env.VITE_FIREBASE_SIGNUP + import.meta.env.VITE_AUTH_API;
         getSecureToken = false
     }
     fetch(url, {
