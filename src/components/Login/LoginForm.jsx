@@ -1,7 +1,12 @@
-import { useState, useRef, useContext } from "react";
-import { AuthContext } from "../context/auth-context";
-import { useNavigate } from "react-router-dom";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
+import { useContext, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
+import { auth } from "../../config/firebaseConfig";
+import { AuthContext } from "../context/auth-context";
 
 function LoginForm() {
   const emailInputRef = useRef();
@@ -10,66 +15,91 @@ function LoginForm() {
   const [isLoading, setIsLoading] = useState(false);
   const loginCtx = useContext(AuthContext);
   const navigate = useNavigate();
-  const {t} = useTranslation()
+  const { t } = useTranslation();
 
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
   }
 
+  // function submitHandler(event) {
+  //   event.preventDefault();
+
+  //   const enteredEmail = emailInputRef.current.value;
+  //   const enteredPsw = passwordInputRef.current.value;
+
+  //   setIsLoading(true);
+  //   let url;
+  //   let getSecureToken;
+  //   if (isLogin) {
+  //     url =
+  //       import.meta.env.VITE_FIREBASE_SIGNIN + import.meta.env.VITE_AUTH_API;
+  //     getSecureToken = true;
+  //   } else {
+  //     url =
+  //       import.meta.env.VITE_FIREBASE_SIGNUP + import.meta.env.VITE_AUTH_API;
+  //     getSecureToken = false;
+  //   }
+  //   fetch(url, {
+  //     method: "POST",
+  //     body: JSON.stringify({
+  //       email: enteredEmail,
+  //       password: enteredPsw,
+  //       returnSecureToken: getSecureToken,
+  //     }),
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //   })
+  //     .then((res) => {
+  //       setIsLoading(false);
+  //       if (res.ok) {
+  //         return res.json();
+  //       } else {
+  //         return res.json().then((data) => {
+  //           let errorMessage = t("techActions.defaultError");
+  //           if (data && data.error && data.error.message) {
+  //             errorMessage = data.error.message;
+  //           }
+  //           throw new Error(errorMessage);
+  //         });
+  //       }
+  //     })
+  //     .then((data) => {
+  //       if (isLogin) {
+  //         loginCtx.login(
+  //           data.idToken,
+  //           data.expiresIn,
+  //           data.localId,
+  //           data.refreshToken
+  //         );
+  //         navigate("/");
+  //       } else {
+  //         emailInputRef.current.value = "";
+  //         passwordInputRef.current.value = "";
+  //         setIsLogin(true);
+  //       }
+  //     })
+  //     .catch((error) => alert(error.message));
+  // }
+
   function submitHandler(event) {
     event.preventDefault();
-
+    setIsLoading(true);
     const enteredEmail = emailInputRef.current.value;
     const enteredPsw = passwordInputRef.current.value;
 
-    setIsLoading(true);
-    let url;
-    let getSecureToken
-    if (isLogin) {
-      url =
-        import.meta.env.VITE_FIREBASE_SIGNIN + import.meta.env.VITE_AUTH_API;
-        getSecureToken = true
+    if (!isLogin) {
+      createUserWithEmailAndPassword(auth, enteredEmail, enteredPsw).then(
+        () => {
+          setIsLoading(false)
+          emailInputRef.current.value = "";
+          passwordInputRef.current.value = "";
+          setIsLogin(true);
+        }
+      );
     } else {
-      url =
-        import.meta.env.VITE_FIREBASE_SIGNUP + import.meta.env.VITE_AUTH_API;
-        getSecureToken = false
+      signInWithEmailAndPassword(auth, enteredEmail, enteredPsw)
     }
-    fetch(url, {
-      method: "POST",
-      body: JSON.stringify({
-        email: enteredEmail,
-        password: enteredPsw,
-        returnSecureToken: getSecureToken,
-      }),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((res) => {
-        setIsLoading(false);
-        if (res.ok) {
-          return res.json();
-        } else {
-          return res.json().then((data) => {
-            let errorMessage = t("techActions.defaultError");
-            if (data && data.error && data.error.message) {
-              errorMessage = data.error.message;
-            }
-            throw new Error(errorMessage);
-          });
-        }
-      })
-      .then((data) => {
-        if (isLogin){
-          loginCtx.login(data.idToken, data.expiresIn, data.localId, data.refreshToken);
-          navigate("/")
-        } else {
-          emailInputRef.current.value = ''
-          passwordInputRef.current.value = ''
-          setIsLogin(true)          
-        }
-      })
-      .catch((error) => alert(error.message));
   }
 
   return (
@@ -101,9 +131,7 @@ function LoginForm() {
             className={"toggle"}
             onClick={switchAuthModeHandler}
           >
-            {isLogin
-              ? t("login.newAcc")
-              : t("signUp.existAcc")}
+            {isLogin ? t("login.newAcc") : t("signUp.existAcc")}
           </button>
         </div>
       </form>

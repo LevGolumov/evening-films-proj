@@ -1,10 +1,11 @@
-import React, { Fragment, useContext, Suspense, useEffect } from "react";
-import Layout from "./components/layout/Layout";
-import { Provider } from "react-redux";
-import store from "./store/filmsStore";
-import { AuthContext } from "./components/context/auth-context";
-import { Navigate, Route, Routes } from "react-router-dom";
+import React, { Fragment, Suspense, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { Provider } from "react-redux";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { AuthContext } from "./components/context/auth-context";
+import Layout from "./components/layout/Layout";
+import { auth } from "./config/firebaseConfig";
+import store from "./store/filmsStore";
 
 const ToWatchFilmsPage = React.lazy(() => import("./pages/ToWatchFilmsPage"));
 const WatchedFilmsPage = React.lazy(() => import("./pages/WatchedFilmsPage"));
@@ -17,48 +18,15 @@ function App() {
   const rootNavigaton = isLoggedIn ? "/to-watch-films" : "/login";
   const { t } = useTranslation();
 
-  function calculateRemainingTime(expirationTime) {
-    const currentTime = new Date().getTime();
-    const updExpTime = new Date(expirationTime).getTime();
-    const remainingTime = updExpTime - currentTime;
-  
-    return remainingTime;
-  }
-
   useEffect(() => {
-    const expirationTime = localStorage.getItem("expirationDate");
-    const refreshToken = localStorage.getItem("refreshToken");
-    const remainingTime = calculateRemainingTime(expirationTime);
-    function refreshHandler(){
-      fetch(
-        "https://securetoken.googleapis.com/v1/token?key=" +
-          import.meta.env.VITE_AUTH_API,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            grant_type: "refresh_token",
-            refresh_token: refreshToken,
-          }),
-        }
-      )
-        .then((res) => {
-          if (res.ok) {
-            return res.json();
-          }
-        })
-        .then((data) => {
-          loginCtx.login(data.id_token, data.expires_in, data.user_id, data.refresh_token)
-        });
-    }
-    
-    let refreshTimer = setTimeout(refreshHandler, remainingTime)
-
-    return () => {
-      clearTimeout(refreshTimer)
-    }
-      
-  }, []);
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        loginCtx.login(user.accessToken, user.uid)
+      } else {
+        loginCtx.logout()
+      }
+    });
+  }, [auth]);
 
   return (
     <Provider store={store}>

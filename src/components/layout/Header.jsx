@@ -6,6 +6,7 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { filmsActions } from "../../store/filmsStore";
+import { auth } from "../../config/firebaseConfig";
 
 function Header() {
   const { t, i18n } = useTranslation();
@@ -52,7 +53,7 @@ function Header() {
   }
 
   function logoutHandler(){
-    loginCtx.logout()
+    auth.signOut()
     dispatch(filmsActions.logout())
   }
 

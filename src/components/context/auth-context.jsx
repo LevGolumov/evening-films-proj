@@ -19,20 +19,20 @@ function AuthContextProvider(props) {
     setToken(undefined);
     setUid(undefined);
     localStorage.removeItem("token");
-    localStorage.removeItem("expirationDate");
+    // localStorage.removeItem("expirationDate");
     localStorage.removeItem("uid");
-    localStorage.removeItem("refreshToken");
+    // localStorage.removeItem("refreshToken");
   }, []);
 
-  function loginHandler(token, expiration, localId, refreshToken) {
+  function loginHandler(token, localId) {
     setToken(token);
     setUid(localId);
 
-    const expirationTime = new Date(new Date().getTime() + +expiration * 1000);
+    // const expirationTime = new Date(new Date().getTime() + +expiration * 1000);
     localStorage.setItem("token", token);
-    localStorage.setItem("expirationDate", expirationTime.toISOString());
+    // localStorage.setItem("expirationDate", expirationTime.toISOString());
     localStorage.setItem("uid", localId);
-    localStorage.setItem("refreshToken", refreshToken);
+    // localStorage.setItem("refreshToken", refreshToken);
   }
 
   const contextValue = {
