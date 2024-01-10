@@ -18,15 +18,16 @@ function ToWatchFilmsPage() {
   );
   const [queueSearch, setQueueSearch] = useState("");
   // const [isSearched, setIsSearched] = useState(false);
-  const [foundAmount, setFoundAmount] = useState(0)
-  const authCtx = useContext(AuthContext)
-  const uid = authCtx.uid
-  const token = authCtx.token
+  const [foundAmount, setFoundAmount] = useState(0);
+  const authCtx = useContext(AuthContext);
+  const uid = authCtx.uid;
+  const token = authCtx.token;
 
-  const {isLoading, error, sendRequests: fetchFilms } = useHttp();
+  const { isLoading, error, sendRequests: fetchFilms } = useHttp();
   const { sendRequests: removeFilm } = useHttp();
   const { sendRequests: submitFilm } = useHttp();
-  const {currentPage, sliceTheList, setCurrentPage, pageNumbers} = usePaginate();
+  const { currentPage, sliceTheList, setCurrentPage, pageNumbers } =
+    usePaginate();
 
   useEffect(() => {
     const transformFilms = (listName, filmsObj) => {
@@ -41,7 +42,9 @@ function ToWatchFilmsPage() {
     function fetchLists(listName) {
       fetchFilms(
         {
-          url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+          url: `${
+            import.meta.env.VITE_DATABASE_URL
+          }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         },
         transformFilms.bind(null, listName)
       );
@@ -49,12 +52,13 @@ function ToWatchFilmsPage() {
     if (!areToWatchFilmsFetched) {
       fetchLists("toWatchFilms");
     }
-    
   }, [fetchFilms, dispatch, areToWatchFilmsFetched, uid, token]);
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
+      url: `${
+        import.meta.env.VITE_DATABASE_URL
+      }/lists/${uid}/default/${listName.toLowerCase()}/${
         data.id
       }.json?auth=${token}`,
       method: "DELETE",
@@ -79,7 +83,9 @@ function ToWatchFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+        url: `${
+          import.meta.env.VITE_DATABASE_URL
+        }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {
@@ -92,7 +98,7 @@ function ToWatchFilmsPage() {
 
   function moveFilmOver(prevListName, newListName, data) {
     removeFilmHandler(prevListName, data);
-    postFilmHandler(newListName, data.film)
+    postFilmHandler(newListName, data.film);
   }
 
   function handleQueueSearch(event) {
@@ -108,20 +114,23 @@ function ToWatchFilmsPage() {
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
-      setFoundAmount(0)
+      setFoundAmount(0);
       return [...toWatchFilms].reverse();
     }
     const sorted = [...toWatchFilms].filter((film) =>
-    film.film.toLowerCase().includes(queueSearch.toLowerCase()))
-    setFoundAmount([...sorted].length)
-    return sorted    
+      film.film.toLowerCase().includes(queueSearch.toLowerCase())
+    );
+    setFoundAmount([...sorted].length);
+    return sorted;
   }, [toWatchFilms, queueSearch]);
 
+  const slicedList = useMemo(
+    () => sliceTheList(sortedFilms),
+    [sliceTheList, sortedFilms]
+  );
 
-  const slicedList = useMemo(() => sliceTheList(sortedFilms), [sliceTheList, sortedFilms])
-  
-  const {t} = useTranslation()
-  
+  const { t } = useTranslation();
+
   return (
     <Fragment>
       <NewFilm onAddFilm={filmAddHandler.bind(null, "toWatchFilms")} />
@@ -129,7 +138,7 @@ function ToWatchFilmsPage() {
       <ListComponent
         header={`${t("pages.toWatchList.amount")}: ${toWatchFilms.length}`}
         found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
-        isSearched = {!!foundAmount}
+        isSearched={!!foundAmount}
         loading={isLoading}
         error={error}
         nothingInList={t("pages.toWatchList.empty")}
@@ -139,7 +148,13 @@ function ToWatchFilmsPage() {
         toWatched={moveFilmOver.bind(null, "toWatchFilms", "watchedFilms")}
         toCurrent={moveFilmOver.bind(null, "toWatchFilms", "currentFilms")}
       />
-      {pageNumbers.length > 1 && <Pagination pageNumbers={pageNumbers} currentPage={currentPage} setCurrentPage={setCurrentPage} />}
+      {pageNumbers.length > 1 && (
+        <Pagination
+          pageNumbers={pageNumbers}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
+      )}
     </Fragment>
   );
 }
