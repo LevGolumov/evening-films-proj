@@ -9,5 +9,6 @@ export type listNameType = "currentList" | "doneList" | "backlogList"
 export interface IListItem {
   id: string;
   item: string;
-  createdAt: Date
+  createdAt: number;
+  updatedAt?: number;
 }
