@@ -6,7 +6,7 @@ import AuthContextProvider from "./components/context/auth-context";
 import "./i18n"
 import { Suspense } from "react";
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const root = ReactDOM.createRoot(document.getElementById("root")!);
 root.render(
   <Suspense fallback={<p style={{"textAlign": "center", "color":"white"}}>...</p>}>
   <BrowserRouter>
