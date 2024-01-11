@@ -4,30 +4,32 @@ export default function Pagination({
   setCurrentPage,
   currentPage,
   pageNumbers
-}) {
+}: {setCurrentPage: () => void,
+  currentPage: number,
+  pageNumbers: number}) {
 
   function handlePageSelection(page){
     setCurrentPage(page)
+  }
+  let pages = []
+  for (let i = 1; i <= pageNumbers; i++) {
+    pages.push(<button
+      key={i}
+      onClick={() => handlePageSelection(i)}
+        className={i === Number(currentPage) ? "pagination__btn pagination__btn--active" : "pagination__btn"}            
+      >
+        {i}
+      </button>)
   }
 
   // if (currentPage < 0 || isNaN(Number(currentPage)) || (pageNumbers.length < currentPage && pageNumbers.length !== 0) ) {
   //   history('../table/1')
   // }
 
+
   return (
     <div className="pagination container">
-      {pageNumbers.map((index) => {
-        return (
-          <button
-          key={index}
-          page={index}
-          onClick={() => handlePageSelection(index)}
-            className={index === Number(currentPage) ? "pagination__btn pagination__btn--active" : "pagination__btn"}            
-          >
-            {index}
-          </button>
-        );
-      })}
+      {pages}
     </div>
   );
 }

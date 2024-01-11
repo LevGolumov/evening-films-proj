@@ -8,9 +8,9 @@ function NewCurrentFilm(props) {
   const [filmSuggestion, setFilmSuggestion] = useState(null);
   const findRandomFilm = useCallback(() => {
     const randomFilmItem =
-      props.toWatchFilms[Math.floor(Math.random() * props.toWatchFilms.length)];
+      props.backlogList[Math.floor(Math.random() * props.backlogList.length)];
     setFilmSuggestion(randomFilmItem);
-  }, [props.toWatchFilms]);  
+  }, [props.backlogList]);  
   const {t} = useTranslation()
 
   useEffect(() => {

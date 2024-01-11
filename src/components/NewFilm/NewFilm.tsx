@@ -1,36 +1,43 @@
 import Section from "../UI/Section";
 import FilmForm from "./FilmForm";
 import useHttp from "../../hooks/use-http";
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { AuthContext } from "../context/auth-context";
+import { IListAndTitle, ListAndTitleFunction } from "../../types/functionTypes";
 
-const NewFilm = (props) => {
+type NewFilmProps = {
+  onAddFilm: ListAndTitleFunction;
+};
+
+const NewFilm: FC<NewFilmProps> = ({onAddFilm}) => {
 
   const authCtx = useContext(AuthContext)
   const uid = authCtx.uid
   const token = authCtx.token
 
-  const createFilm = (filmText, data) => {
+  // const createFilm = (filmText, data) => {
 
-    const generatedId = data.name; // firebase-specific => "name" contains generated id
-    const createdFilm = { id: generatedId, film: filmText };
+  //   const generatedId = data.name; // firebase-specific => "name" contains generated id
+  //   const createdFilm = { id: generatedId, film: filmText };
 
-    props.onAddFilm(createdFilm);
-  }
+  //   onAddFilm(createdFilm);
+  // }
 
   const { isLoading, error, sendRequests: submitFilm } = useHttp();
 
-  const enterFilmHandler = async (filmText) => {
+  const enterFilmHandler = async (filmText: string) => {
 
-    submitFilm({
-      url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/towatchfilms.json?auth=${token}`,
-      method: "POST",
-      body: { film: filmText.trim() },
-      headers: {
-        "Content-Type": "application/json",
-      },      
-    },
-    createFilm.bind(null, filmText));
+    // submitFilm({
+    //   url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/backlogList.json?auth=${token}`,
+    //   method: "POST",
+    //   body: { film: filmText.trim() },
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },      
+    // },
+    // createFilm.bind(null, filmText));
+
+    onAddFilm('backlogList', filmText);
   };
 
   return (

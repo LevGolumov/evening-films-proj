@@ -2,24 +2,24 @@ import ListComponent from "../components/ListComponent/ListComponent";
 import { Fragment, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useHttp from "../hooks/use-http";
-import { filmsActions } from "../store/filmsStore";
-import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
+import { itemsActions } from "../store/listsStore";
+import NewCurrentFilm from "../components/currentList/NewCurrentFilm";
 import { useEffect } from "react";
 import { AuthContext } from "../components/context/auth-context";
 import { useTranslation } from "react-i18next";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
-  const currentFilms = useSelector((state) => state.films.currentFilms.list);
-  const toWatchFilms = useSelector((state) => state.films.toWatchFilms.list);
+  const currentList = useSelector((state) => state.items.currentList.list);
+  const backlogList = useSelector((state) => state.items.backlogList.list);
   const authCtx = useContext(AuthContext)
   const uid = authCtx.uid
   const token = authCtx.token
   const areCurrentFilmsFetched = useSelector(
-    (state) => state.films.currentFilms.isFetched
+    (state) => state.items.currentList.isFetched
   );
   const areToWatchFilmsFetched = useSelector(
-    (state) => state.films.toWatchFilms.isFetched
+    (state) => state.items.backlogList.isFetched
   );
   const [popup, setPopup] = useState(false);
 
@@ -34,7 +34,7 @@ function CurrentFilmsPage() {
       for (const filmKey in filmsObj) {
         loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
       }
-      dispatch(filmsActions.loadList({ list: listName, films: loadedFilms }));
+      dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
     };
 
     function fetchLists(listName) {
@@ -47,14 +47,14 @@ function CurrentFilmsPage() {
     }
 
     if (!areToWatchFilmsFetched) {
-      fetchLists("toWatchFilms");
+      fetchLists("backlogList");
     } else if (!areCurrentFilmsFetched) {
-      fetchLists("currentFilms");
+      fetchLists("currentList");
     }
   }, [fetchFilms, dispatch, areToWatchFilmsFetched, areCurrentFilmsFetched, uid, token]);
 
   function filmAddHandler(listName, film) {
-    dispatch(filmsActions.addFilm({ list: listName, film: film }));
+    dispatch(itemsActions.addFilm({ list: listName, film: film }));
   }
 
   function createFilm(filmText, listName, data) {
@@ -74,7 +74,7 @@ function CurrentFilmsPage() {
         "Content-Type": "application/json",
       },
     });
-    dispatch(filmsActions.removeFilm({ list: listName, removedFilm: data }));
+    dispatch(itemsActions.removeFilm({ list: listName, removedFilm: data }));
   }
   function postFilmHandler(listName, filmText) {
     submitFilm(
@@ -102,11 +102,11 @@ function CurrentFilmsPage() {
     setPopup(false);
   }
   function chooseCurrentFilmHandler(film) {
-    moveFilmOver.bind(null, "toWatchFilms", "currentFilms");
+    moveFilmOver.bind(null, "backlogList", "currentList");
   }
   function addFilmToCurrentsHandler(data) {
-    removeFilmHandler("toWatchFilms", data);
-    postFilmHandler("currentFilms", data.film);
+    removeFilmHandler("backlogList", data);
+    postFilmHandler("currentList", data.film);
     closeModalHanler();
   }
   const {t} = useTranslation()
@@ -116,21 +116,21 @@ function CurrentFilmsPage() {
         <NewCurrentFilm
           onCloseModal={closeModalHanler}
           onChooseFilm={chooseCurrentFilmHandler}
-          toWatchFilms={toWatchFilms}
+          backlogList={backlogList}
           onAddFilm={addFilmToCurrentsHandler}
-          currentFilmsLength={currentFilms.length}
+          currentFilmsLength={currentList.length}
         />
       )}
       <ListComponent
         header={t("pages.currentList.header")}
         loading={isLoading}
         error={error}
-        items={currentFilms}
+        items={currentList}
         onNewFilmRequest={openModalHanler}
-        removeFilmHandler={removeFilmHandler.bind(null, "currentFilms")}
-        toWatched={moveFilmOver.bind(null, "currentFilms", "watchedFilms")}
-        toWatchFilmsList={toWatchFilms}
-        listName="CurrentFilms"
+        removeFilmHandler={removeFilmHandler.bind(null, "currentList")}
+        toWatched={moveFilmOver.bind(null, "currentList", "doneList")}
+        toWatchFilmsList={backlogList}
+        listName="currentList"
       />
     </Fragment>
   );

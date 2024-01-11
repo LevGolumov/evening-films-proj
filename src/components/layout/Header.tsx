@@ -5,7 +5,7 @@ import { AuthContext } from "../context/auth-context";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { filmsActions } from "../../store/filmsStore";
+import { itemsActions } from "../../store/listsStore";
 import { auth } from "../../config/firebaseConfig";
 
 function Header() {
@@ -54,7 +54,7 @@ function Header() {
 
   function logoutHandler(){
     auth.signOut()
-    dispatch(filmsActions.logout())
+    dispatch(itemsActions.logout())
   }
 
   return (

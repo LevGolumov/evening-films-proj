@@ -1,7 +1,7 @@
 import ListComponent from "../components/ListComponent/ListComponent";
 import Search from "../components/Search/Search";
 import { useSelector, useDispatch } from "react-redux";
-import { filmsActions } from "../store/filmsStore";
+import { itemsActions } from "../store/listsStore";
 import useHttp from "../hooks/use-http";
 import { Fragment, useEffect, useMemo, useState } from "react";
 import { useContext } from "react";
@@ -17,15 +17,16 @@ function WatchedFilmsPage() {
   const uid = authCtx.uid;
   const token = authCtx.token;
 
-  const watchedFilms = useSelector((state) => state.films.watchedFilms.list);
+  const doneList = useSelector((state) => state.items.doneList.list);
   const areFilmsFetched = useSelector(
-    (state) => state.films.watchedFilms.isFetched
+    (state) => state.items.doneList.isFetched
   );
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const { sendRequests: removeFilm } = useHttp();
   const { isLoading, error, sendRequests: fetchFilms } = useHttp();
-  const {currentPage, sliceTheList, setCurrentPage, pageNumbers} = usePaginate();
+  const { currentPage, sliceTheList, setCurrentPage, pageNumbers } =
+    usePaginate();
 
   useEffect(() => {
     const transformFilms = (listName, filmsObj) => {
@@ -34,7 +35,7 @@ function WatchedFilmsPage() {
       for (const filmKey in filmsObj) {
         loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
       }
-      dispatch(filmsActions.loadList({ list: listName, films: loadedFilms }));
+      dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
     };
 
     function fetchLists(listName) {
@@ -48,7 +49,7 @@ function WatchedFilmsPage() {
       );
     }
     if (!areFilmsFetched) {
-      fetchLists("watchedFilms");
+      fetchLists("doneList");
     }
   }, [fetchFilms, dispatch, areFilmsFetched, uid, token]);
 
@@ -64,21 +65,21 @@ function WatchedFilmsPage() {
         "Content-Type": "application/json",
       },
     });
-    dispatch(filmsActions.removeFilm({ list: listName, removedFilm: data }));
+    dispatch(itemsActions.removeFilm({ list: listName, removedFilm: data }));
   }
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
       setFoundAmount(0);
-      return [...watchedFilms].reverse();
+      return [...doneList].reverse();
     }
 
-    const sorted = [...watchedFilms].filter((film) =>
-      film.film.toLowerCase().includes(queueSearch.toLowerCase())
+    const sorted = [...doneList].filter((item) =>
+      item.item.toLowerCase().includes(queueSearch.toLowerCase())
     );
     setFoundAmount([...sorted].length);
     return sorted;
-  }, [watchedFilms, queueSearch]);
+  }, [doneList, queueSearch]);
 
   function handleQueueSearch(event) {
     setQueueSearch(event.target.value);
@@ -99,10 +100,10 @@ function WatchedFilmsPage() {
         nothingInList={t("pages.watchedList.nothingInList")}
         loading={isLoading}
         error={error}
-        header={`${t("pages.watchedList.header")}: ${watchedFilms.length ?? 0}`}
-        listName="watchedFilms"
+        header={`${t("pages.watchedList.header")}: ${doneList.length ?? 0}`}
+        listName="doneList"
         items={slicedList}
-        removeFilmHandler={removeFilmHandler.bind(null, "watchedFilms")}
+        removeFilmHandler={removeFilmHandler.bind(null, "doneList")}
       />
       {pageNumbers.length > 1 && (
         <Pagination

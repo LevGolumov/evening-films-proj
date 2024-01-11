@@ -1,111 +1,104 @@
-import { Fragment, useState, useEffect, useMemo, useContext } from "react";
+import {
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getCountFromServer,
+  onSnapshot,
+  query,
+  where,
+} from "firebase/firestore";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch, useSelector } from "react-redux";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
-import useHttp from "../hooks/use-http";
-import Search from "../components/Search/Search";
-import { useSelector, useDispatch } from "react-redux";
-import { filmsActions } from "../store/filmsStore";
-import { AuthContext } from "../components/context/auth-context";
 import Pagination from "../components/Pagination/Pagination";
+import Search from "../components/Search/Search";
+import { AuthContext } from "../components/context/auth-context";
+import { firestoreDB } from "../config/firebaseConfig";
+import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
-import { useTranslation } from "react-i18next";
-import { getDatabase, onValue, ref, remove } from "firebase/database";
+import { itemsActions } from "../store/listsStore";
+import { IListItem, ListAndTitleFunction } from "../types/functionTypes";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
-  const toWatchFilms = useSelector((state) => state.films.toWatchFilms.list);
-  const areToWatchFilmsFetched = useSelector(
-    (state) => state.films.toWatchFilms.isFetched
-  );
+  const backlogList = useSelector((state) => state.items.backlogList.list);
   const [queueSearch, setQueueSearch] = useState("");
-  // const [isSearched, setIsSearched] = useState(false);
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
+  const [pageNumbers, setPageNumbers] = useState(0);
+  const [itemsCount, setItemsCount] = useState(0);
+  const { isLoading, error } = useHttp();
+  const { currentPage, sliceTheList, setCurrentPage } = usePaginate();
   const uid = authCtx.uid;
-  const token = authCtx.token;
 
-  const database = getDatabase();
-  const towatchfilmsRef = ref(database, "lists/" + uid + "/default/towatchfilms");
-
-
-  const { isLoading, error, sendRequests: fetchFilms } = useHttp();
-  const { sendRequests: removeFilm } = useHttp();
-  const { sendRequests: submitFilm } = useHttp();
-  const { currentPage, sliceTheList, setCurrentPage, pageNumbers } =
-    usePaginate();
+  const backlogListQuerry = query(
+    collection(firestoreDB, "lists", uid, "default"),
+    where("type", "==", "backlogList")
+  );
 
   useEffect(() => {
-    onValue(towatchfilmsRef, (snapshot) => {
-      const data = snapshot.val();
-      if (data) {
-        const loadedFilms = [];
-        for (const filmKey in data) {
-          loadedFilms.push({ id: filmKey, film: data[filmKey].film });
-        }
-        dispatch(filmsActions.loadList({ list: "toWatchFilms", films: loadedFilms }));
-      }
+    getCountFromServer(backlogListQuerry).then((data) => {
+      setItemsCount(data.data().count);
     });
   }, []);
 
-  async function removeFilmHandler(listName, data) {
-    remove((ref(database, "lists/" + uid + "/default/towatchfilms/" + data.id)))
-    dispatch(filmsActions.removeFilm({ list: listName, removedFilm: data }));
+  useEffect(() => {
+    setPageNumbers(Math.ceil(itemsCount / 10));
+  }, [itemsCount]);
+
+  useEffect(() => {
+    const unsub = onSnapshot(backlogListQuerry, (snapshot) => {
+      const items: IListItem[] = [];
+      snapshot.forEach((doc) => {
+        items.push({
+          id: doc.id,
+          item: doc.data().item,
+          createdAt: doc.data().createdAt,
+        });
+      });
+      dispatch(itemsActions.setList({ list: "backlogList", items }));
+    });
+
+    return () => unsub();
+  }, []);
+
+  async function removeFilmHandler(dataId: string) {
+    await deleteDoc(doc(firestoreDB, "lists", uid, "default", dataId));
+    setItemsCount((prev) => prev - 1);
   }
 
-  function filmAddHandler(listName, film) {
-    dispatch(filmsActions.addFilm({ list: listName, film: film }));
-  }
-
-  function createFilm(filmText, listName, data) {
-    const generatedId = data.name; // firebase-specific => "name" contains generated id
-    const createdFilm = { id: generatedId, film: filmText };
-
-    filmAddHandler(listName, createdFilm);
-  }
-
-  function postFilmHandler(listName, filmText) {
-    submitFilm(
-      {
-        url: `${
-          import.meta.env.VITE_DATABASE_URL
-        }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
-        method: "POST",
-        body: { film: filmText },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-      createFilm.bind(null, filmText, listName)
-    );
-  }
+  const postFilmHandler: ListAndTitleFunction = (listName, filmText) => {
+    addDoc(collection(firestoreDB, "lists", uid, "default"), {
+      item: filmText,
+      type: listName,
+      createdAt: new Date().getTime(),
+    });
+    setItemsCount((prev) => prev + 1);
+  };
 
   function moveFilmOver(prevListName, newListName, data) {
-    removeFilmHandler(prevListName, data);
-    postFilmHandler(newListName, data.film);
+    // removeFilmHandler(prevListName, data);
+    // postFilmHandler(newListName, data.film);
   }
 
   function handleQueueSearch(event) {
     setQueueSearch(event.target.value);
-    // if (!isSearched){
-    //   setIsSearched(true)
-    // }
-
-    // if (event.target.value === ""){
-    //   setIsSearched(false)
-    // }
   }
 
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
       setFoundAmount(0);
-      return [...toWatchFilms].reverse();
+      return [...backlogList].sort((a, b) => b.createdAt - a.createdAt);
     }
-    const sorted = [...toWatchFilms].filter((film) =>
-      film.film.toLowerCase().includes(queueSearch.toLowerCase())
+    const sorted = [...backlogList].filter((item) =>
+      item.item.toLowerCase().includes(queueSearch.toLowerCase())
     );
     setFoundAmount([...sorted].length);
     return sorted;
-  }, [toWatchFilms, queueSearch]);
+  }, [backlogList, queueSearch]);
 
   const slicedList = useMemo(
     () => sliceTheList(sortedFilms),
@@ -116,22 +109,22 @@ function ToWatchFilmsPage() {
 
   return (
     <Fragment>
-      <NewFilm onAddFilm={filmAddHandler.bind(null, "toWatchFilms")} />
+      <NewFilm onAddFilm={postFilmHandler} />
       <Search value={queueSearch} onChange={handleQueueSearch} />
       <ListComponent
-        header={`${t("pages.toWatchList.amount")}: ${toWatchFilms.length}`}
+        header={`${t("pages.toWatchList.amount")}: ${itemsCount}`}
         found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
         isSearched={!!foundAmount}
         loading={isLoading}
         error={error}
         nothingInList={t("pages.toWatchList.empty")}
         items={slicedList}
-        listName="toWatchFilms"
-        removeFilmHandler={removeFilmHandler.bind(null, "toWatchFilms")}
-        toWatched={moveFilmOver.bind(null, "toWatchFilms", "watchedFilms")}
-        toCurrent={moveFilmOver.bind(null, "toWatchFilms", "currentFilms")}
+        listName="backlogList"
+        removeFilmHandler={removeFilmHandler}
+        toWatched={moveFilmOver.bind(null, "backlogList", "doneList")}
+        toCurrent={moveFilmOver.bind(null, "backlogList", "currentList")}
       />
-      {pageNumbers.length > 1 && (
+      {pageNumbers > 1 && (
         <Pagination
           pageNumbers={pageNumbers}
           currentPage={currentPage}
