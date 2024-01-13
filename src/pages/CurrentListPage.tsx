@@ -19,7 +19,8 @@ import { firestoreDB } from "../config/firebaseConfig";
 import { useStoreSelector } from "../hooks/reduxHooks";
 import useHttp from "../hooks/use-http";
 import { itemsActions } from "../store/itemsStore";
-import { IListItem } from "../types/functionTypes";
+import { IListFinalItem } from "../types/globalTypes";
+import { deleteItem, moveItemOver } from "../utilities/functions";
 
 function CurrentListPage() {
   const dispatch = useDispatch();
@@ -27,12 +28,9 @@ function CurrentListPage() {
   const backlogList = useStoreSelector((state) => state.items.backlogList.list);
   const authCtx = useContext(AuthContext);
   const uid = authCtx.uid;
-  const token = authCtx.token;  
   const [popup, setPopup] = useState(false);
 
-  const { isLoading, error, sendRequests: fetchFilms } = useHttp();
-  const { sendRequests: removeFilm } = useHttp();
-  const { sendRequests: submitFilm } = useHttp();
+  const { isLoading, error } = useHttp();
 
   const querryArgs: [
     CollectionReference<DocumentData, DocumentData>,
@@ -46,11 +44,11 @@ function CurrentListPage() {
     where("author", "==", uid),
   ];
 
-  const currentListQuerry = query(...querryArgs)
+  const currentListQuerry = query(...querryArgs);
 
   useEffect(() => {
     const unsub = onSnapshot(currentListQuerry, (snapshot) => {
-      const items: IListItem[] = [];
+      const items: IListFinalItem[] = [];
       snapshot.forEach((doc) => {
         items.push({
           id: doc.id,
@@ -59,9 +57,9 @@ function CurrentListPage() {
           author: doc.data().author,
           list: doc.data().list,
           sublist: doc.data().sublist,
-          ...doc.data().comment && { comment: doc.data().comment },
-          ...doc.data().rating && { rating: doc.data().rating },
-          ...doc.data().updatedAt && { updatedAt: doc.data().updatedAt },
+          ...(doc.data().comment && { comment: doc.data().comment }),
+          ...(doc.data().rating && { rating: doc.data().rating }),
+          ...(doc.data().updatedAt && { updatedAt: doc.data().updatedAt }),
         });
       });
       dispatch(itemsActions.setList({ list: "currentList", items }));
@@ -69,100 +67,15 @@ function CurrentListPage() {
 
     return () => unsub();
   }, []);
-
-  // useEffect(() => {
-  //   const transformFilms = (listName, filmsObj) => {
-  //     const loadedFilms = [];
-
-  //     for (const filmKey in filmsObj) {
-  //       loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
-  //     }
-  //     dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
-  //   };
-
-  //   function fetchLists(listName) {
-  //     fetchFilms(
-  //       {
-  //         url: `${
-  //           import.meta.env.VITE_DATABASE_URL
-  //         }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
-  //       },
-  //       transformFilms.bind(null, listName)
-  //     );
-  //   }
-
-  //   if (!areToWatchFilmsFetched) {
-  //     fetchLists("backlogList");
-  //   } else if (!areCurrentFilmsFetched) {
-  //     fetchLists("currentList");
-  //   }
-  // }, [
-  //   fetchFilms,
-  //   dispatch,
-  //   areToWatchFilmsFetched,
-  //   areCurrentFilmsFetched,
-  //   uid,
-  //   token,
-  // ]);
-
-  function filmAddHandler(listName, film) {
-    dispatch(itemsActions.addFilm({ list: listName, film: film }));
-  }
-
-  function createFilm(filmText, listName, data) {
-    const generatedId = data.name; // firebase-specific => "name" contains generated id
-    const createdFilm = { id: generatedId, film: filmText };
-
-    filmAddHandler(listName, createdFilm);
-  }
-
-  async function removeFilmHandler(listName, data) {
-    removeFilm({
-      url: `${
-        import.meta.env.VITE_DATABASE_URL
-      }/lists/${uid}/default/${listName.toLowerCase()}/${
-        data.id
-      }.json?auth=${token}`,
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    dispatch(itemsActions.removeFilm({ list: listName, removedFilm: data }));
-  }
-  function postFilmHandler(listName, filmText) {
-    submitFilm(
-      {
-        url: `${
-          import.meta.env.VITE_DATABASE_URL
-        }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
-        method: "POST",
-        body: { film: filmText },
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
-      createFilm.bind(null, filmText, listName)
-    );
-  }
-
-  function moveFilmOver(prevListName, newListName, data) {
-    removeFilmHandler(prevListName, data);
-    postFilmHandler(newListName, data.film);
-  }
-
+  
   function openModalHanler() {
     setPopup(true);
   }
   function closeModalHanler() {
     setPopup(false);
   }
-  function chooseCurrentFilmHandler(film) {
-    moveFilmOver.bind(null, "backlogList", "currentList");
-  }
-  function addFilmToCurrentsHandler(data) {
-    removeFilmHandler("backlogList", data);
-    postFilmHandler("currentList", data.film);
+  function addFilmToCurrentsHandler(data: IListFinalItem) {
+    moveItemOver("currentList", data)
     closeModalHanler();
   }
   const { t } = useTranslation();
@@ -171,7 +84,7 @@ function CurrentListPage() {
       {popup && (
         <NewCurrentFilm
           onCloseModal={closeModalHanler}
-          onChooseFilm={chooseCurrentFilmHandler}
+          onChooseFilm={moveItemOver}
           backlogList={backlogList}
           onAddFilm={addFilmToCurrentsHandler}
           currentFilmsLength={currentList.length}
@@ -182,11 +95,10 @@ function CurrentListPage() {
         loading={isLoading}
         error={error}
         items={currentList}
-        onNewFilmRequest={openModalHanler}
-        removeFilmHandler={removeFilmHandler.bind(null, "currentList")}
-        toWatched={moveFilmOver.bind(null, "currentList", "doneList")}
-        toWatchFilmsList={backlogList}
+        onNewItemRequest={openModalHanler}
+        removeItemHandler={deleteItem}
         listName="currentList"
+        moveItemOver={moveItemOver}
       />
     </Fragment>
   );

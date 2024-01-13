@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { IListFinalItem, IListItem, listNameType } from "../../types/functionTypes";
+import { IListFinalItem, listNameType } from "../../types/globalTypes";
 import { moveItemOverType } from "../../utilities/functions";
 import Section from "../UI/Section";
 import classes from "./ListComponent.module.css";
@@ -7,15 +7,16 @@ import ListItem from "./ListItem";
 
 type ListComponentType = {
   header: string;
-  found: string;
-  isSearched: boolean;
+  found?: string;
+  isSearched?: boolean;
   loading: boolean;
   error?: string | null;
-  nothingInList: string;
+  nothingInList?: string;
   items: IListFinalItem[];
   listName: listNameType;
-  removeFilmHandler: (id: string) => void;
-  moveItemOver: moveItemOverType;
+  removeItemHandler: (id: string) => void;
+  moveItemOver?: moveItemOverType;
+  onNewItemRequest?: () => void;
 };
 
 const ListComponent = ({
@@ -27,7 +28,7 @@ const ListComponent = ({
   nothingInList,
   items,
   listName,
-  removeFilmHandler,
+  removeItemHandler,
   moveItemOver,
 }: ListComponentType) => {
   let filmList;
@@ -41,7 +42,7 @@ const ListComponent = ({
   //     <h2>
   //       {t("pages.currentList.empty.header")}
   //       <br />{" "}
-  //       <Button onClick={onNewFilmRequest}>
+  //       <Button onClick={onNewItemRequest}>
   //         {t("pages.currentList.empty.btn")}
   //       </Button>
   //     </h2>
@@ -63,25 +64,25 @@ const ListComponent = ({
         <h2 className="list__header">{header}</h2>
         {isSearched && <h3>{found}</h3>}
         <ul>
-          {listName === "backlogList"
+          {listName === "backlogList" && moveItemOver
             ? items.map((item) => (
                 <ListItem
                   key={item.id}
                   listName={listName}
                   toWatched={() => moveItemOver("doneList", item)}
                   toCurrent={() => moveItemOver("currentList", item)}
-                  onRemove={() => removeFilmHandler(item.id)}
+                  onRemove={() => removeItemHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
               ))
-            : listName === "currentList"
+            : listName === "currentList" && moveItemOver
             ? items.map((item) => (
                 <ListItem
                   key={item.id}
                   listName={listName}
                   toWatched={() => moveItemOver("doneList", item)}
-                  onRemove={() => removeFilmHandler(item.id)}
+                  onRemove={() => removeItemHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
@@ -90,20 +91,20 @@ const ListComponent = ({
                 <ListItem
                   key={item.id}
                   listName={listName}
-                  onRemove={() => removeFilmHandler(item.id)}
+                  onRemove={() => removeItemHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
               ))}
         </ul>
         {/* {isUnwatchedList && (
-          <Button onClick={onNewFilmRequest}>
+          <Button onClick={onNewItemRequest}>
             {t("pages.currentList.notEmpty.btn")}
           </Button>
         )} */}
       </div>
     );
-  } else {
+  } else if (items.length === 0 && nothingInList) {
     filmList = <h2>{nothingInList}</h2>;
   }
 
@@ -128,11 +129,7 @@ const ListComponent = ({
   }
 
   if (error) {
-    content = (
-      <button className="button">
-        {t("techActions.tryAgain")}
-      </button>
-    );
+    content = <button className="button">{t("techActions.tryAgain")}</button>;
   }
 
   return (

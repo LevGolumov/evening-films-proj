@@ -3,7 +3,7 @@ import FilmForm from "./FilmForm";
 import useHttp from "../../hooks/use-http";
 import { FC, useContext } from "react";
 import { AuthContext } from "../context/auth-context";
-import { IListAndTitle, ListAndTitleFunction } from "../../types/functionTypes";
+import { IListAndTitle, ListAndTitleFunction } from "../../types/globalTypes";
 
 type NewFilmProps = {
   onAddFilm: ListAndTitleFunction;

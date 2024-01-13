@@ -36,10 +36,11 @@ import {
   IListItem,
   ListAndTitleFunction,
   listNameType,
-} from "../types/functionTypes";
+} from "../types/globalTypes";
 import {
   deleteItem,
-  moveItemOver
+  listItemsCount,
+  moveItemOver,
 } from "../utilities/functions";
 
 function BacklogListPage() {
@@ -48,10 +49,9 @@ function BacklogListPage() {
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
-  const [pageNumbers, setPageNumbers] = useState(0);
   const [itemsCount, setItemsCount] = useState(0);
   const { isLoading, error } = useHttp();
-  const { currentPage, sliceTheList, setCurrentPage } = usePaginate();
+  const { currentPage, sliceTheList, setCurrentPage, pageNumbers, calcPageAmount } = usePaginate();
   const uid = authCtx.uid;
   const querryArgs: [
     CollectionReference<DocumentData, DocumentData>,
@@ -68,13 +68,11 @@ function BacklogListPage() {
   const backlogListQuerry = query(...querryArgs);
 
   useEffect(() => {
-    getCountFromServer(backlogListQuerry).then((data) => {
-      setItemsCount(data.data().count);
-    });
+    listItemsCount(backlogListQuerry).then((res) => setItemsCount(res));
   }, []);
 
   useEffect(() => {
-    setPageNumbers(Math.ceil(itemsCount / 10));
+    calcPageAmount(itemsCount);
   }, [itemsCount]);
 
   useEffect(() => {
@@ -99,7 +97,7 @@ function BacklogListPage() {
     return () => unsub();
   }, []);
 
-  async function removeFilmHandler(dataId: string) {
+  async function removeItemHandler(dataId: string) {
     await deleteItem(dataId);
     setItemsCount((prev) => prev - 1);
   }
@@ -120,7 +118,10 @@ function BacklogListPage() {
     setItemsCount((prev) => prev + 1);
   };
 
-  const moveFilmOver= async (newListName: listNameType, data: IListFinalItem) => {
+  const moveFilmOver = async (
+    newListName: listNameType,
+    data: IListFinalItem
+  ) => {
     await moveItemOver(newListName, data);
     setItemsCount((prev) => prev - 1);
   };
@@ -161,7 +162,7 @@ function BacklogListPage() {
         nothingInList={t("pages.toWatchList.empty")}
         items={slicedList}
         listName="backlogList"
-        removeFilmHandler={removeFilmHandler}
+        removeItemHandler={removeItemHandler}
         moveItemOver={moveFilmOver}
       />
       {pageNumbers > 1 && (

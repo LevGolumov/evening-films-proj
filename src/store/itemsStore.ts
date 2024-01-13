@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { listNameType, IListItem, IListFinalItem } from "../types/functionTypes";
+import { IListFinalItem, listNameType } from "../types/globalTypes";
 
 type fetchedList = { list: IListFinalItem[]; isFetched: boolean };
 
