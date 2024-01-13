@@ -2,85 +2,20 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { useContext, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
 import { auth } from "../../config/firebaseConfig";
-import { AuthContext } from "../context/auth-context";
 
 function LoginForm() {
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [isLogin, setIsLogin] = useState(true);
-  const [isLoading, setIsLoading] = useState(false);
-  const loginCtx = useContext(AuthContext);
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);  
   const { t } = useTranslation();
 
   function switchAuthModeHandler() {
     setIsLogin((prevState) => !prevState);
   }
-
-  // function submitHandler(event) {
-  //   event.preventDefault();
-
-  //   const enteredEmail = emailInputRef.current.value;
-  //   const enteredPsw = passwordInputRef.current.value;
-
-  //   setIsLoading(true);
-  //   let url;
-  //   let getSecureToken;
-  //   if (isLogin) {
-  //     url =
-  //       import.meta.env.VITE_FIREBASE_SIGNIN + import.meta.env.VITE_AUTH_API;
-  //     getSecureToken = true;
-  //   } else {
-  //     url =
-  //       import.meta.env.VITE_FIREBASE_SIGNUP + import.meta.env.VITE_AUTH_API;
-  //     getSecureToken = false;
-  //   }
-  //   fetch(url, {
-  //     method: "POST",
-  //     body: JSON.stringify({
-  //       email: enteredEmail,
-  //       password: enteredPsw,
-  //       returnSecureToken: getSecureToken,
-  //     }),
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //     },
-  //   })
-  //     .then((res) => {
-  //       setIsLoading(false);
-  //       if (res.ok) {
-  //         return res.json();
-  //       } else {
-  //         return res.json().then((data) => {
-  //           let errorMessage = t("techActions.defaultError");
-  //           if (data && data.error && data.error.message) {
-  //             errorMessage = data.error.message;
-  //           }
-  //           throw new Error(errorMessage);
-  //         });
-  //       }
-  //     })
-  //     .then((data) => {
-  //       if (isLogin) {
-  //         loginCtx.login(
-  //           data.idToken,
-  //           data.expiresIn,
-  //           data.localId,
-  //           data.refreshToken
-  //         );
-  //         navigate("/");
-  //       } else {
-  //         emailInputRef.current.value = "";
-  //         passwordInputRef.current.value = "";
-  //         setIsLogin(true);
-  //       }
-  //     })
-  //     .catch((error) => alert(error.message));
-  // }
 
   function submitHandler(event) {
     event.preventDefault();

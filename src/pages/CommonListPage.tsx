@@ -23,6 +23,7 @@ import {
   query,
   onSnapshot,
   addDoc,
+  getDocs,
 } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -51,6 +52,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const itemsList = useStoreSelector((state) => state.items[passedList].list);
+  const parentList = useStoreSelector((state) => state.items.parentList);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
@@ -66,7 +68,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     clearPages,
   } = usePaginate();
   const uid = authCtx.uid;
-  const querryArgs: [
+  const itemsQuerryArgs: [
     CollectionReference<DocumentData, DocumentData>,
     QueryOrderByConstraint,
     QueryFieldFilterConstraint,
@@ -78,11 +80,11 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     where("author", "==", uid),
   ];
 
-  const listQuerry = query(...querryArgs);
+  const itemsQuerry = query(...itemsQuerryArgs);
 
   useEffect(() => {
     if (passedList !== "currentList") {
-      listItemsCount(listQuerry).then((res) => setItemsCount(res));
+      listItemsCount(itemsQuerry).then((res) => setItemsCount(res));
     }
 
     return () => {
@@ -98,7 +100,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   }, [itemsCount, passedList]);
 
   useEffect(() => {
-    const unsub = onSnapshot(listQuerry, (snapshot) => {
+    const unsub = onSnapshot(itemsQuerry, (snapshot) => {
       const items: IListFinalItem[] = [];
       snapshot.forEach((doc) => {
         items.push({
@@ -133,7 +135,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
       sublist: listName,
       createdAt: new Date().getTime(),
       author: uid,
-      list: "default",
+      list: parentList || 'default',
     };
 
     addDoc(collection(firestoreDB, "items"), itemInfo);

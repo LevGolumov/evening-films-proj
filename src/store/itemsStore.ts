@@ -6,6 +6,7 @@ type fetchedList = { list: IListFinalItem[]; isFetched: boolean };
 const initialList: fetchedList = { list: [], isFetched: false };
 
 const itemsInitialState = {
+  parentList: "",
   backlogList: initialList,
   doneList: initialList,
   currentList: initialList,
@@ -15,7 +16,7 @@ const itemsSlice = createSlice({
   name: "items",
   initialState: itemsInitialState,
   reducers: {
-    addFilm(
+    addItem(
       state,
       action: PayloadAction<{ list: listNameType; item: IListFinalItem }>
     ) {
@@ -23,7 +24,7 @@ const itemsSlice = createSlice({
         action.payload.item
       );
     },
-    removeFilm(
+    removeItem(
       state,
       action: PayloadAction<{ list: listNameType; removedItem: IListFinalItem }>
     ) {
@@ -40,6 +41,9 @@ const itemsSlice = createSlice({
     },
     logout(state) {
       return (state = { ...itemsInitialState });
+    },
+    setParentList(state, action: PayloadAction<string>) {
+      state.parentList = action.payload;
     },
   },
 });

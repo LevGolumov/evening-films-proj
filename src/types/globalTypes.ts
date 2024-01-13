@@ -2,13 +2,20 @@ export interface IListAndTitle {
   listName: listNameType;
   filmText: string;
 }
-export type ListAndTitleFunction = (listName: listNameType, filmText: string) => void;
+export type ListAndTitleFunction = (
+  listName: listNameType,
+  filmText: string
+) => void;
 
-export type listNameType = "currentList" | "doneList" | "backlogList"
+export type listNameType = "currentList" | "doneList" | "backlogList";
 
 export interface ISublist {
   sublist: listNameType;
   updatedAt?: number;
+}
+
+interface ID {
+  id: string;
 }
 
 export interface IListItem extends ISublist {
@@ -21,6 +28,14 @@ export interface IListItem extends ISublist {
   createdAt: number;
 }
 
-export interface IListFinalItem extends IListItem {
-  id: string;
+export interface IListFinalItem extends IListItem, ID {}
+
+export interface IParentList {
+  allowedUsers?: string[];
+  author: string;
+  createdAt: number;
+  favorite: boolean;
+  title: string;
 }
+
+export interface IParentListWithId extends IParentList, ID {}
