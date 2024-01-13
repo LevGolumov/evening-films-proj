@@ -78,13 +78,13 @@ function Header() {
       {loginCtx.isLoggedIn && (
         <div className={"header__buttons container"}>
           <NavLink to="/">
-            <Button className={pathBtnHighlight('to-watch-films')}>{t("lists.toWatch")}</Button>
+            <Button className={pathBtnHighlight('backlog-list')}>{t("lists.toWatch")}</Button>
           </NavLink>
-          <NavLink to="/current-films">
-            <Button className={pathBtnHighlight('current-films')}>{t("lists.current")}</Button>
+          <NavLink to="/current-list">
+            <Button className={pathBtnHighlight('current-list')}>{t("lists.current")}</Button>
           </NavLink>
-          <NavLink to="/watched-films">
-            <Button className={pathBtnHighlight('watched-films')}>{t("lists.watched")}</Button>
+          <NavLink to="/done-list">
+            <Button className={pathBtnHighlight('done-list')}>{t("lists.watched")}</Button>
           </NavLink>
         </div>
       )}

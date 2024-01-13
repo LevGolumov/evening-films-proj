@@ -1,12 +1,3 @@
-import ListComponent from "../components/ListComponent/ListComponent";
-import { Fragment, useState, useContext } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import useHttp from "../hooks/use-http";
-import { itemsActions } from "../store/itemsStore";
-import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
-import { useEffect } from "react";
-import { AuthContext } from "../components/context/auth-context";
-import { useTranslation } from "react-i18next";
 import {
   CollectionReference,
   DocumentData,
@@ -18,20 +9,29 @@ import {
   query,
   where,
 } from "firebase/firestore";
+import { Fragment, useContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
+import ListComponent from "../components/ListComponent/ListComponent";
+import { AuthContext } from "../components/context/auth-context";
 import { firestoreDB } from "../config/firebaseConfig";
+import { useStoreSelector } from "../hooks/reduxHooks";
+import useHttp from "../hooks/use-http";
+import { itemsActions } from "../store/itemsStore";
 import { IListItem } from "../types/functionTypes";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
-  const currentList = useSelector((state) => state.items.currentList.list);
-  const backlogList = useSelector((state) => state.items.backlogList.list);
+  const currentList = useStoreSelector((state) => state.items.currentList.list);
+  const backlogList = useStoreSelector((state) => state.items.backlogList.list);
   const authCtx = useContext(AuthContext);
   const uid = authCtx.uid;
   const token = authCtx.token;
-  const areCurrentFilmsFetched = useSelector(
+  const areCurrentFilmsFetched = useStoreSelector(
     (state) => state.items.currentList.isFetched
   );
-  const areToWatchFilmsFetched = useSelector(
+  const areToWatchFilmsFetched = useStoreSelector(
     (state) => state.items.backlogList.isFetched
   );
   const [popup, setPopup] = useState(false);

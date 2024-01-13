@@ -1,16 +1,16 @@
-import ListComponent from "../components/ListComponent/ListComponent";
-import Search from "../components/Search/Search";
-import { useSelector, useDispatch } from "react-redux";
-import { itemsActions } from "../store/itemsStore";
-import useHttp from "../hooks/use-http";
-import { Fragment, useEffect, useMemo, useState } from "react";
-import { useContext } from "react";
-import { AuthContext } from "../components/context/auth-context";
+import { CollectionReference, DocumentData, QueryFieldFilterConstraint, QueryOrderByConstraint, collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
+import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import ListComponent from "../components/ListComponent/ListComponent";
 import Pagination from "../components/Pagination/Pagination";
-import usePaginate from "../hooks/use-paginate";
-import { CollectionReference, DocumentData, QueryOrderByConstraint, QueryFieldFilterConstraint, collection, orderBy, where, query, onSnapshot } from "firebase/firestore";
+import Search from "../components/Search/Search";
+import { AuthContext } from "../components/context/auth-context";
 import { firestoreDB } from "../config/firebaseConfig";
+import { useStoreSelector } from "../hooks/reduxHooks";
+import useHttp from "../hooks/use-http";
+import usePaginate from "../hooks/use-paginate";
+import { itemsActions } from "../store/itemsStore";
 import { IListItem } from "../types/functionTypes";
 
 function WatchedFilmsPage() {
@@ -20,13 +20,10 @@ function WatchedFilmsPage() {
   const uid = authCtx.uid;
   const token = authCtx.token;
 
-  const doneList = useSelector((state) => state.items.doneList.list);
-  const areFilmsFetched = useSelector(
-    (state) => state.items.doneList.isFetched
-  );
+  const doneList = useStoreSelector((state) => state.items.doneList.list);
+  
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
-  const { sendRequests: removeFilm } = useHttp();
   const { isLoading, error, sendRequests: fetchFilms } = useHttp();
   const { currentPage, sliceTheList, setCurrentPage, pageNumbers } =
     usePaginate();
@@ -67,44 +64,10 @@ function WatchedFilmsPage() {
       return () => unsub();
     }, []);
 
-  // useEffect(() => {
-  //   const transformFilms = (listName, filmsObj) => {
-  //     const loadedFilms = [];
+  
 
-  //     for (const filmKey in filmsObj) {
-  //       loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
-  //     }
-  //     dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
-  //   };
-
-  //   function fetchLists(listName) {
-  //     fetchFilms(
-  //       {
-  //         url: `${
-  //           import.meta.env.VITE_DATABASE_URL
-  //         }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
-  //       },
-  //       transformFilms.bind(null, listName)
-  //     );
-  //   }
-  //   if (!areFilmsFetched) {
-  //     fetchLists("doneList");
-  //   }
-  // }, [fetchFilms, dispatch, areFilmsFetched, uid, token]);
-
-  async function removeFilmHandler(listName, data) {
-    // removeFilm({
-    //   url: `${
-    //     import.meta.env.VITE_DATABASE_URL
-    //   }/lists/${uid}/default/${listName.toLowerCase()}/${
-    //     data.id
-    //   }.json?auth=${token}`,
-    //   method: "DELETE",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    // });
-    dispatch(itemsActions.removeFilm({ list: listName, removedFilm: data }));
+  async function removeFilmHandler(listName, data) {    
+    dispatch(itemsActions.removeFilm({ list: listName, removedItem: data }));
   }
 
   const sortedFilms = useMemo(() => {

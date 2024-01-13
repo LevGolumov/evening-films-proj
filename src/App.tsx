@@ -15,18 +15,8 @@ const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 function App() {
   const loginCtx = useContext(AuthContext);
   const isLoggedIn = loginCtx.isLoggedIn;
-  const rootNavigaton = isLoggedIn ? "/to-watch-films" : "/login";
-  const { t } = useTranslation();
-
-  useEffect(() => {
-    auth.onAuthStateChanged((user) => {
-      if (user) {
-        loginCtx.login(user.accessToken, user.uid)
-      } else {
-        loginCtx.logout()
-      }
-    });
-  }, [auth]);
+  const rootNavigaton = isLoggedIn ? "/backlog-list" : "/login";
+  const { t } = useTranslation();  
 
   return (
     <Provider store={store}>
@@ -37,9 +27,9 @@ function App() {
             {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
             {isLoggedIn && (
               <Fragment>
-                <Route path="/to-watch-films" element={<ToWatchFilmsPage />} />
-                <Route path="/watched-films" element={<WatchedFilmsPage />} />
-                <Route path="/current-films" element={<CurrentFilmsPage />} />
+                <Route path="/backlog-list" element={<ToWatchFilmsPage />} />
+                <Route path="/done-list" element={<WatchedFilmsPage />} />
+                <Route path="/current-list" element={<CurrentFilmsPage />} />
               </Fragment>
             )}
           </Routes>

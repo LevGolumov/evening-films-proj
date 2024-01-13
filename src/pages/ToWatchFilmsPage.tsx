@@ -8,23 +8,22 @@ import {
   deleteDoc,
   doc,
   getCountFromServer,
-  getDocs,
-  limit,
   onSnapshot,
   orderBy,
   query,
   updateDoc,
-  where,
+  where
 } from "firebase/firestore";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
 import Pagination from "../components/Pagination/Pagination";
 import Search from "../components/Search/Search";
 import { AuthContext } from "../components/context/auth-context";
 import { firestoreDB } from "../config/firebaseConfig";
+import { useStoreSelector } from "../hooks/reduxHooks";
 import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
@@ -32,7 +31,7 @@ import { IListItem, ISublist, ListAndTitleFunction, listNameType } from "../type
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
-  const backlogList: IListItem[] = useSelector((state) => state.items.backlogList.list);
+  const backlogList: IListItem[] = useStoreSelector((state) => state.items.backlogList.list);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
