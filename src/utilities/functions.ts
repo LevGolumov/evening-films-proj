@@ -1,9 +1,9 @@
 import { deleteDoc, doc, updateDoc } from "firebase/firestore";
-import { IListItem, ISublist, listNameType } from "../types/functionTypes";
 import { firestoreDB } from "../config/firebaseConfig";
+import { IListFinalItem, ISublist, listNameType } from "../types/functionTypes";
 
 
-export async function moveItemOver(newListName: listNameType, data: IListItem) {
+export async function moveItemOver(newListName: listNameType, data: IListFinalItem) {
   const listUpd: ISublist = {
     sublist: newListName,
     updatedAt: new Date().getTime(),

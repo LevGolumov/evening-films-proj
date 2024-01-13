@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { IListItem, listNameType } from "../../types/functionTypes";
+import { IListFinalItem, IListItem, listNameType } from "../../types/functionTypes";
 import { moveItemOverType } from "../../utilities/functions";
 import Section from "../UI/Section";
 import classes from "./ListComponent.module.css";
@@ -12,7 +12,7 @@ type ListComponentType = {
   loading: boolean;
   error?: string | null;
   nothingInList: string;
-  items: IListItem[];
+  items: IListFinalItem[];
   listName: listNameType;
   removeFilmHandler: (id: string) => void;
   moveItemOver: moveItemOverType;
@@ -103,6 +103,8 @@ const ListComponent = ({
         )} */}
       </div>
     );
+  } else {
+    filmList = <h2>{nothingInList}</h2>;
   }
 
   // if (
@@ -125,13 +127,13 @@ const ListComponent = ({
     content = t("techActions.loading") + "...";
   }
 
-  // if (error) {
-  //   content = (
-  //     <button className="button" onClick={onFetch}>
-  //       {t("techActions.tryAgain")}
-  //     </button>
-  //   );
-  // }
+  if (error) {
+    content = (
+      <button className="button">
+        {t("techActions.tryAgain")}
+      </button>
+    );
+  }
 
   return (
     <Section>

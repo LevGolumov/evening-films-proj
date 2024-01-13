@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { listNameType, IListItem } from "../types/functionTypes";
+import { listNameType, IListItem, IListFinalItem } from "../types/functionTypes";
 
-type fetchedList = { list: IListItem[]; isFetched: boolean };
+type fetchedList = { list: IListFinalItem[]; isFetched: boolean };
 
 const initialList: fetchedList = { list: [], isFetched: false };
 
@@ -17,7 +17,7 @@ const itemsSlice = createSlice({
   reducers: {
     addFilm(
       state,
-      action: PayloadAction<{ list: listNameType; item: IListItem }>
+      action: PayloadAction<{ list: listNameType; item: IListFinalItem }>
     ) {
       state[action.payload.list].list = state[action.payload.list].list.concat(
         action.payload.item
@@ -25,7 +25,7 @@ const itemsSlice = createSlice({
     },
     removeFilm(
       state,
-      action: PayloadAction<{ list: listNameType; removedItem: IListItem }>
+      action: PayloadAction<{ list: listNameType; removedItem: IListFinalItem }>
     ) {
       state[action.payload.list].list = state[action.payload.list].list.filter(
         (item) => item.id !== action.payload.removedItem.id
@@ -33,7 +33,7 @@ const itemsSlice = createSlice({
     },
     setList(
       state,
-      action: PayloadAction<{ list: listNameType; items: IListItem[] }>
+      action: PayloadAction<{ list: listNameType; items: IListFinalItem[] }>
     ) {
       state[action.payload.list].list = [...action.payload.items];
       state[action.payload.list].isFetched = true;

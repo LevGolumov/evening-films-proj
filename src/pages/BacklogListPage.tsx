@@ -9,9 +9,16 @@ import {
   onSnapshot,
   orderBy,
   query,
-  where
+  where,
 } from "firebase/firestore";
-import { Fragment, useContext, useEffect, useMemo, useState } from "react";
+import {
+  ChangeEvent,
+  Fragment,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import ListComponent from "../components/ListComponent/ListComponent";
@@ -24,12 +31,20 @@ import { useStoreSelector } from "../hooks/reduxHooks";
 import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
-import { IListItem, ListAndTitleFunction, listNameType } from "../types/functionTypes";
-import { deleteItem, moveItemOver, moveItemOverType } from "../utilities/functions";
+import {
+  IListFinalItem,
+  IListItem,
+  ListAndTitleFunction,
+  listNameType,
+} from "../types/functionTypes";
+import {
+  deleteItem,
+  moveItemOver
+} from "../utilities/functions";
 
 function BacklogListPage() {
   const dispatch = useDispatch();
-  const backlogList: IListItem[] = useStoreSelector((state) => state.items.backlogList.list);
+  const backlogList = useStoreSelector((state) => state.items.backlogList.list);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
@@ -64,7 +79,7 @@ function BacklogListPage() {
 
   useEffect(() => {
     const unsub = onSnapshot(backlogListQuerry, (snapshot) => {
-      const items: IListItem[] = [];
+      const items: IListFinalItem[] = [];
       snapshot.forEach((doc) => {
         items.push({
           id: doc.id,
@@ -73,9 +88,9 @@ function BacklogListPage() {
           author: doc.data().author,
           list: doc.data().list,
           sublist: doc.data().sublist,
-          ...doc.data().comment && { comment: doc.data().comment },
-          ...doc.data().rating && { rating: doc.data().rating },
-          ...doc.data().updatedAt && { updatedAt: doc.data().updatedAt },
+          ...(doc.data().comment && { comment: doc.data().comment }),
+          ...(doc.data().rating && { rating: doc.data().rating }),
+          ...(doc.data().updatedAt && { updatedAt: doc.data().updatedAt }),
         });
       });
       dispatch(itemsActions.setList({ list: "backlogList", items }));
@@ -89,26 +104,28 @@ function BacklogListPage() {
     setItemsCount((prev) => prev - 1);
   }
 
-  const postFilmHandler: ListAndTitleFunction = (listName: listNameType, filmText) => {
+  const postFilmHandler: ListAndTitleFunction = (
+    listName: listNameType,
+    filmText
+  ) => {
     const itemInfo: IListItem = {
       title: filmText,
       sublist: listName,
       createdAt: new Date().getTime(),
       author: uid,
-      list: 'default',
-      id: "" // generate beforehand by firebase
-    }
+      list: "default",
+    };
 
-    addDoc(collection(firestoreDB, "items"), itemInfo );
+    addDoc(collection(firestoreDB, "items"), itemInfo);
     setItemsCount((prev) => prev + 1);
   };
 
-  const moveFilmOver: moveItemOverType = async (newListName, data) => {
+  const moveFilmOver= async (newListName: listNameType, data: IListFinalItem) => {
     await moveItemOver(newListName, data);
     setItemsCount((prev) => prev - 1);
-  }
+  };
 
-  async function handleQueueSearch(event) {
+  async function handleQueueSearch(event: ChangeEvent<HTMLInputElement>) {
     setQueueSearch(event.target.value);
   }
 
@@ -124,7 +141,7 @@ function BacklogListPage() {
     return sorted;
   }, [backlogList, queueSearch]);
 
-  const slicedList: IListItem[] = useMemo(
+  const slicedList: IListFinalItem[] = useMemo(
     () => sliceTheList(sortedFilms),
     [sliceTheList, sortedFilms]
   );

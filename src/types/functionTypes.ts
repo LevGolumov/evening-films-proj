@@ -12,7 +12,6 @@ export interface ISublist {
 }
 
 export interface IListItem extends ISublist {
-  id: string;
   author: string;
   comment?: string;
   list: string; //id of the parent list in lists collection
@@ -20,4 +19,8 @@ export interface IListItem extends ISublist {
   sublist: listNameType;
   title: string;
   createdAt: number;
+}
+
+export interface IListFinalItem extends IListItem {
+  id: string;
 }
