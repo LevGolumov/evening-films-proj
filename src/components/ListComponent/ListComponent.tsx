@@ -1,112 +1,137 @@
-import Section from "../UI/Section";
-import ListItem from "./ListItem";
-import classes from "./ListComponent.module.css";
-import Button from "../UI/Button";
 import { useTranslation } from "react-i18next";
+import { IListItem, listNameType } from "../../types/functionTypes";
+import { moveItemOverType } from "../../utilities/functions";
+import Section from "../UI/Section";
+import classes from "./ListComponent.module.css";
+import ListItem from "./ListItem";
 
-const ListComponent = (props) => {
+type ListComponentType = {
+  header: string;
+  found: string;
+  isSearched: boolean;
+  loading: boolean;
+  error?: string | null;
+  nothingInList: string;
+  items: IListItem[];
+  listName: listNameType;
+  removeFilmHandler: (id: string) => void;
+  moveItemOver: moveItemOverType;
+};
+
+const ListComponent = ({
+  header,
+  found,
+  isSearched,
+  loading,
+  error,
+  nothingInList,
+  items,
+  listName,
+  removeFilmHandler,
+  moveItemOver,
+}: ListComponentType) => {
   let filmList;
-  let isUnwatchedList;
+  // let isUnwatchedList;
   let content;
   const { t } = useTranslation();
 
-  if (props.toWatchFilmsList !== undefined) {
-    isUnwatchedList = !!props.toWatchFilmsList.length;
-    filmList = (
-      <h2>
-        {t("pages.currentList.empty.header")}
-        <br />{" "}
-        <Button onClick={props.onNewFilmRequest}>
-          {t("pages.currentList.empty.btn")}
-        </Button>
-      </h2>
-    );
-  } else {
-    isUnwatchedList = false;
-    filmList = <h2>{props.nothingInList}</h2>;
-  }
+  // if (toWatchFilmsList !== undefined) {
+  //   isUnwatchedList = !!toWatchFilmsList.length;
+  //   filmList = (
+  //     <h2>
+  //       {t("pages.currentList.empty.header")}
+  //       <br />{" "}
+  //       <Button onClick={onNewFilmRequest}>
+  //         {t("pages.currentList.empty.btn")}
+  //       </Button>
+  //     </h2>
+  //   );
+  // } else {
+  //   isUnwatchedList = false;
+  //   filmList = <h2>{nothingInList}</h2>;
+  // }
 
-  if (props.items.length > 0) {
+  if (items.length > 0) {
     // let reverseFilmList;
     // if (!isUnwatchedList) {
-    //   reverseFilmList = [...props.items].reverse();
+    //   reverseFilmList = [...items].reverse();
     // } else {
-    //   reverseFilmList = [...props.items];
+    //   reverseFilmList = [...items];
     // }
     filmList = (
       <div>
-        <h2 className="list__header">{props.header}</h2>
-        {props.isSearched && <h3>{props.found}</h3>}
+        <h2 className="list__header">{header}</h2>
+        {isSearched && <h3>{found}</h3>}
         <ul>
-          {props.listName === "backlogList"
-            ? props.items.map((item) => (
+          {listName === "backlogList"
+            ? items.map((item) => (
                 <ListItem
                   key={item.id}
-                  listName={props.listName}
-                  toWatched={props.toWatched.bind(null, item)}
-                  toCurrent={props.toCurrent.bind(null, item)}
-                  onRemove={() => props.removeFilmHandler(item.id)}
+                  listName={listName}
+                  toWatched={() => moveItemOver("doneList", item)}
+                  toCurrent={() => moveItemOver("currentList", item)}
+                  onRemove={() => removeFilmHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
               ))
-            : props.listName === "currentList"
-            ? props.items.map((item) => (
+            : listName === "currentList"
+            ? items.map((item) => (
                 <ListItem
                   key={item.id}
-                  listName={props.listName}
-                  toWatched={props.toWatched.bind(null, item)}
-                  onRemove={() => props.removeFilmHandler(item.id)}
+                  listName={listName}
+                  toWatched={() => moveItemOver("doneList", item)}
+                  onRemove={() => removeFilmHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
               ))
-            : props.items.map((item) => (
+            : items.map((item) => (
                 <ListItem
                   key={item.id}
-                  listName={props.listName}
-                  onRemove={() => props.removeFilmHandler(item.id)}
+                  listName={listName}
+                  onRemove={() => removeFilmHandler(item.id)}
                 >
                   {item.title}
                 </ListItem>
               ))}
         </ul>
-        {isUnwatchedList && (
-          <Button onClick={props.onNewFilmRequest}>
+        {/* {isUnwatchedList && (
+          <Button onClick={onNewFilmRequest}>
             {t("pages.currentList.notEmpty.btn")}
           </Button>
-        )}
+        )} */}
       </div>
     );
   }
 
-  if (
-    props.toWatchFilmsList &&
-    props.toWatchFilmsList.length === 0 &&
-    props.items.length === 0 &&
-    !props.loading
-  ) {
-    filmList = (
-      <h2>
-        {t("pages.currentList.empty.nothingness.1")} <br />{" "}
-        {t("pages.currentList.empty.nothingness.2")}
-      </h2>
-    );
-  }
+  // if (
+  //   toWatchFilmsList &&
+  //   toWatchFilmsList.length === 0 &&
+  //   items.length === 0 &&
+  //   !loading
+  // ) {
+  //   filmList = (
+  //     <h2>
+  //       {t("pages.currentList.empty.nothingness.1")} <br />{" "}
+  //       {t("pages.currentList.empty.nothingness.2")}
+  //     </h2>
+  //   );
+  // }
 
   content = filmList;
 
-  if (props.loading) {
+  if (loading) {
     content = t("techActions.loading") + "...";
   }
 
-  if (props.error) {
-    content = (
-      <button className="button" onClick={props.onFetch}>
-        {t("techActions.tryAgain")}
-      </button>
-    );
-  }
+  // if (error) {
+  //   content = (
+  //     <button className="button" onClick={onFetch}>
+  //       {t("techActions.tryAgain")}
+  //     </button>
+  //   );
+  // }
 
   return (
     <Section>

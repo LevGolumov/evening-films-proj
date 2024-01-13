@@ -24,7 +24,7 @@ function DoneListPage() {
   
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
-  const { isLoading, error, sendRequests: fetchFilms } = useHttp();
+  const { isLoading, error} = useHttp();
   const { currentPage, sliceTheList, setCurrentPage, pageNumbers } =
     usePaginate();
 

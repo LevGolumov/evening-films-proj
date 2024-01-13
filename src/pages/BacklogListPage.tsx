@@ -5,13 +5,10 @@ import {
   QueryOrderByConstraint,
   addDoc,
   collection,
-  deleteDoc,
-  doc,
   getCountFromServer,
   onSnapshot,
   orderBy,
   query,
-  updateDoc,
   where
 } from "firebase/firestore";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
@@ -27,7 +24,8 @@ import { useStoreSelector } from "../hooks/reduxHooks";
 import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
-import { IListItem, ISublist, ListAndTitleFunction, listNameType } from "../types/functionTypes";
+import { IListItem, ListAndTitleFunction, listNameType } from "../types/functionTypes";
+import { deleteItem, moveItemOver, moveItemOverType } from "../utilities/functions";
 
 function BacklogListPage() {
   const dispatch = useDispatch();
@@ -87,7 +85,7 @@ function BacklogListPage() {
   }, []);
 
   async function removeFilmHandler(dataId: string) {
-    await deleteDoc(doc(firestoreDB, "items", dataId));
+    await deleteItem(dataId);
     setItemsCount((prev) => prev - 1);
   }
 
@@ -105,12 +103,8 @@ function BacklogListPage() {
     setItemsCount((prev) => prev + 1);
   };
 
-  function moveFilmOver(newListName, data) {
-    const listUpd: ISublist = {
-      sublist: newListName,
-      updatedAt: new Date().getTime(),
-    }
-    updateDoc(doc(firestoreDB, "items", data.id), listUpd);
+  const moveFilmOver: moveItemOverType = async (newListName, data) => {
+    await moveItemOver(newListName, data);
     setItemsCount((prev) => prev - 1);
   }
 
@@ -151,8 +145,7 @@ function BacklogListPage() {
         items={slicedList}
         listName="backlogList"
         removeFilmHandler={removeFilmHandler}
-        toWatched={moveFilmOver.bind(null, "doneList")}
-        toCurrent={moveFilmOver.bind(null, "currentList")}
+        moveItemOver={moveFilmOver}
       />
       {pageNumbers > 1 && (
         <Pagination
