@@ -22,7 +22,7 @@ import {
   where,
   query,
   onSnapshot,
-  addDoc,  
+  addDoc,
 } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -48,7 +48,7 @@ type CommonListPageProps = {
 };
 
 const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
-  const dispatch = useDispatch();  
+  const dispatch = useDispatch();
   const { t } = useTranslation();
   const itemsList = useStoreSelector((state) => state.items[passedList].list);
   const [queueSearch, setQueueSearch] = useState("");
@@ -63,7 +63,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     setCurrentPage,
     pageNumbers,
     calcPageAmount,
-    clearPages
+    clearPages,
   } = usePaginate();
   const uid = authCtx.uid;
   const querryArgs: [
@@ -86,9 +86,9 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     }
 
     return () => {
-        setItemsCount(0)
-        clearPages()
-    }
+      setItemsCount(0);
+      clearPages();
+    };
   }, [passedList]);
 
   useEffect(() => {
@@ -153,9 +153,9 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   }
 
   const sortedFilms = useMemo(() => {
-    if (queueSearch === "") {
+    if (queueSearch === "" || passedList === "currentList") {
       setFoundAmount(0);
-      return [...itemsList]
+      return [...itemsList];
     }
     const sorted = [...itemsList].filter((item) =>
       item.title.toLowerCase().includes(queueSearch.toLowerCase())
