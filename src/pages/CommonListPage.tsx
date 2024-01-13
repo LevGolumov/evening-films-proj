@@ -73,7 +73,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     QueryFieldFilterConstraint
   ] = [
     collection(firestoreDB, "items"),
-    orderBy("createdAt", "desc"),
+    orderBy(passedList === "backlogList" ? "createdAt" : "updatedAt", "desc"),
     where("sublist", "==", passedList),
     where("author", "==", uid),
   ];
@@ -155,7 +155,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
       setFoundAmount(0);
-      return [...itemsList].sort((a, b) => b.createdAt - a.createdAt);
+      return [...itemsList]
     }
     const sorted = [...itemsList].filter((item) =>
       item.title.toLowerCase().includes(queueSearch.toLowerCase())

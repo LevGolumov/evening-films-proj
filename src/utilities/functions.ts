@@ -4,7 +4,7 @@ import {
   deleteDoc,
   doc,
   getCountFromServer,
-  updateDoc,
+  updateDoc
 } from "firebase/firestore";
 import { firestoreDB } from "../config/firebaseConfig";
 import { IListFinalItem, ISublist, listNameType } from "../types/globalTypes";
