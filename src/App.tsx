@@ -14,7 +14,7 @@ import {
   getDocs,
   addDoc,
 } from "firebase/firestore";
-import { firestoreDB } from "./config/firebaseConfig.ts";
+import { auth, firestoreDB } from "./config/firebaseConfig.ts";
 import { useDispatch } from "react-redux";
 import { itemsActions } from "./store/itemsStore.ts";
 import { IParentList } from "./types/globalTypes.ts";
@@ -32,15 +32,15 @@ function App() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
-  const listsQuerryArgs: [
-    CollectionReference<DocumentData, DocumentData>,
-    QueryFieldFilterConstraint
-  ] = [collection(firestoreDB, "lists"), where("author", "==", uid)];
-
-  const listsQuerry = query(...listsQuerryArgs);
-
   useEffect(() => {
     if (uid && isLoggedIn) {
+      const listsQuerryArgs: [
+        CollectionReference<DocumentData, DocumentData>,
+        QueryFieldFilterConstraint
+      ] = [collection(firestoreDB, "lists"), where("author", "==", uid)];
+    
+      const listsQuerry = query(...listsQuerryArgs);
+
       getDocs(listsQuerry).then((querySnapshot) => {
         if (querySnapshot.empty) {
           const listInfo: IParentList = {
@@ -59,6 +59,17 @@ function App() {
       });
     }
   }, [uid, isLoggedIn]);
+
+  useEffect(() => {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        authCtx.login(user.accessToken, user.uid)
+      } else {
+        authCtx.logout()
+      }
+    });
+  }, [auth]);
+
 
   return (
     <Layout>

@@ -5,7 +5,7 @@ export const AuthContext = React.createContext({
   token: "",
   uid: "",
   isLoggedIn: false,
-  login: (token) => {},
+  login: (token, uid) => {},
   logout: () => {},
 });
 
