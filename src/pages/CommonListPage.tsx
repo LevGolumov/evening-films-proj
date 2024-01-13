@@ -47,7 +47,8 @@ type CommonListPageProps = {
 };
 
 const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch();  
+  const { t } = useTranslation();
   const itemsList = useStoreSelector((state) => state.items[passedList].list);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
@@ -160,8 +161,6 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     [sliceTheList, sortedFilms]
   );
 
-  const { t } = useTranslation();
-
   const header = useMemo(() => {
     switch (passedList) {
       case "backlogList":
@@ -174,6 +173,9 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
         return "";
     }
   }, [passedList, t, itemsCount]);
+
+  function getRandomItemHandler() {
+  }
 
   return (
     <Fragment>
@@ -192,8 +194,9 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
         listName={passedList}
         removeItemHandler={removeItemHandler}
         moveItemOver={relistItem}
+        onNewItemRequest={getRandomItemHandler}
       />
-      {pageNumbers > 1 && (
+      {pageNumbers > 1 && passedList !== "currentList" && (
         <Pagination
           pageNumbers={pageNumbers}
           currentPage={currentPage}
