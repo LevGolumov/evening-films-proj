@@ -1,48 +1,126 @@
-import Modal from "../UI/Modal";
-import { useState, useEffect, useCallback } from "react";
-import Button from "../UI/Button";
-import classes from "./NewCurrentFilm.module.css";
+import {
+  CollectionReference,
+  DocumentData,
+  QueryFieldFilterConstraint,
+  WhereFilterOp,
+  collection,
+  doc,
+  getDocs,
+  limit,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { firestoreDB } from "../../config/firebaseConfig";
+import { IListFinalItem, IListItem } from "../../types/globalTypes";
+import { moveItemOverType } from "../../utilities/functions";
+import Button from "../UI/Button";
+import Modal from "../UI/Modal";
+import classes from "./NewCurrentFilm.module.css";
 
-function NewCurrentFilm(props) {
-  const [filmSuggestion, setFilmSuggestion] = useState(null);
-  const findRandomFilm = useCallback(() => {
-    const randomFilmItem =
-      props.backlogList[Math.floor(Math.random() * props.backlogList.length)];
-    setFilmSuggestion(randomFilmItem);
-  }, [props.backlogList]);  
-  const {t} = useTranslation()
+type NewCurrentFilmProps = {
+  currentFilmsLength: number;
+  onCloseModal: () => void;
+  onAddFilm: moveItemOverType;
+  uid: string;
+};
+
+function NewCurrentFilm({
+  currentFilmsLength,
+  onCloseModal,
+  onAddFilm,
+  uid,
+}: NewCurrentFilmProps) {
+  const [filmSuggestion, setFilmSuggestion] = useState<IListFinalItem | null>(
+    null
+  );
+  const { t } = useTranslation();
+  const querryArgs: [
+    CollectionReference<DocumentData, DocumentData>,
+    QueryFieldFilterConstraint,
+    QueryFieldFilterConstraint
+  ] = [
+    collection(firestoreDB, "items"),
+    where("sublist", "==", "backlogList"),
+    where("author", "==", uid),
+  ];
+
+  function randomQuerryConstructor(
+    randomID: string,
+    comparison: WhereFilterOp
+  ) {
+    return query(
+      ...querryArgs,
+      where("__name__", comparison, randomID),
+      orderBy("__name__", "asc"),
+      limit(1)
+    );
+  }
+
+  async function snapshoptHandler(
+    ref: ReturnType<typeof randomQuerryConstructor>
+  ) {
+    const snapshot = await getDocs(ref);
+    if (snapshot.empty) return false;
+
+    const data = snapshot.docs[0].data();    
+    setFilmSuggestion({...data as IListItem, id: snapshot.docs[0].id});
+    return true;
+  }
+
+  const findRandomFilm = useCallback(async () => {
+    let autoID = doc(collection(firestoreDB, "items")).id;
+
+    let findRandomItemRes = await snapshoptHandler(
+      randomQuerryConstructor(autoID, ">=")
+    );
+
+    if (!findRandomItemRes) {
+      findRandomItemRes = await snapshoptHandler(
+        randomQuerryConstructor(autoID, "<=")
+      );
+      if (!findRandomItemRes) {
+        // TODO - add error handling
+        return;
+      }
+    }
+  }, [firestoreDB]);
 
   useEffect(() => {
-    if (props.currentFilmsLength <= 4) {
-      findRandomFilm()
+    if (currentFilmsLength <= 4) {
+      findRandomFilm();
     }
-  }, [findRandomFilm, props.currentFilmsLength])
-  
-  if (props.currentFilmsLength > 4) {
-    return <Modal onClick={props.onCloseModal}>
-    <h2 className={classes.title}>
-      {t("newCurrentFilm.enough")}
-    </h2>
-    <div className={classes.buttons}>
-      <Button onClick={props.onCloseModal}>
-        {t("techActions.close")}
-      </Button>
-    </div>
-  </Modal>
-  } 
+  }, [findRandomFilm, currentFilmsLength]);
+
+  if (currentFilmsLength > 4) {
+    return (
+      <Modal onClick={onCloseModal}>
+        <h2 className={classes.title}>{t("newCurrentFilm.enough")}</h2>
+        <div className={classes.buttons}>
+          <Button onClick={onCloseModal}>{t("techActions.close")}</Button>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
-    <Modal onClick={props.onCloseModal}>
+    <Modal onClick={onCloseModal}>
       <h2 className={classes.title}>
-        {filmSuggestion === null ? "Nothing" : filmSuggestion.film}
+        {filmSuggestion === null ? "Nothing" : filmSuggestion.title}
       </h2>
-      <div className={classes.buttons}>
-        <Button onClick={findRandomFilm}>{t("newCurrentFilm.another")}</Button>
-        <Button onClick={props.onAddFilm.bind(null, filmSuggestion)}>
-        {t("newCurrentFilm.chooseThis")}
-        </Button>
-      </div>
+
+      {filmSuggestion !== null && (
+        <div className={classes.buttons}>
+          <Button onClick={findRandomFilm}>
+            {t("newCurrentFilm.another")}
+          </Button>
+          <Button onClick={() => {onAddFilm("currentList", filmSuggestion); onCloseModal()}}>
+            {t("newCurrentFilm.chooseThis")}
+          </Button>
+        </div>
+      )}
     </Modal>
   );
 }

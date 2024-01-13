@@ -10,6 +10,11 @@ function usePaginate() {
   }
   , [linesPerPage]);
 
+  const clearPages = useCallback(() => {
+    setCurrentPage(1);
+    setPageNumbers(1);
+  }, []);
+
   const sliceTheList = useCallback((list: any[]) => {
     const lastListIndex = currentPage * linesPerPage;
     const firstListIndex = lastListIndex - linesPerPage;
@@ -17,7 +22,7 @@ function usePaginate() {
     return [...list].slice(firstListIndex, lastListIndex);
   }, [currentPage]);
 
-  return { currentPage, sliceTheList, setCurrentPage, pageNumbers, calcPageAmount };
+  return { currentPage, sliceTheList, setCurrentPage, pageNumbers, calcPageAmount, clearPages };
 }
 
 export default usePaginate;

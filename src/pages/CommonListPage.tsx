@@ -22,7 +22,7 @@ import {
   where,
   query,
   onSnapshot,
-  addDoc,
+  addDoc,  
 } from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
@@ -41,6 +41,7 @@ import {
   moveItemOver,
 } from "../utilities/functions";
 import Search from "../components/Search/Search";
+import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 
 type CommonListPageProps = {
   passedList: listNameType;
@@ -54,6 +55,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
   const [itemsCount, setItemsCount] = useState(0);
+  const [popup, setPopup] = useState(false);
   const { isLoading, error } = useHttp();
   const {
     currentPage,
@@ -61,6 +63,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     setCurrentPage,
     pageNumbers,
     calcPageAmount,
+    clearPages
   } = usePaginate();
   const uid = authCtx.uid;
   const querryArgs: [
@@ -80,6 +83,11 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   useEffect(() => {
     if (passedList !== "currentList") {
       listItemsCount(listQuerry).then((res) => setItemsCount(res));
+    }
+
+    return () => {
+        setItemsCount(0)
+        clearPages()
     }
   }, [passedList]);
 
@@ -174,14 +182,19 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     }
   }, [passedList, t, itemsCount]);
 
-  function getRandomItemHandler() {
-  }
-
   return (
     <Fragment>
       {passedList === "backlogList" && <NewFilm onAddFilm={postFilmHandler} />}
       {passedList !== "currentList" && (
         <Search value={queueSearch} onChange={handleQueueSearch} />
+      )}
+      {passedList === "currentList" && popup && (
+        <NewCurrentFilm
+          onCloseModal={() => setPopup(false)}
+          onAddFilm={moveItemOver}
+          currentFilmsLength={itemsList.length}
+          uid={uid}
+        />
       )}
       <ListComponent
         header={header}
@@ -194,7 +207,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
         listName={passedList}
         removeItemHandler={removeItemHandler}
         moveItemOver={relistItem}
-        onNewItemRequest={getRandomItemHandler}
+        onNewItemRequest={() => setPopup(true)}
       />
       {pageNumbers > 1 && passedList !== "currentList" && (
         <Pagination
