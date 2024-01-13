@@ -1,16 +1,4 @@
-import {
-  CollectionReference,
-  DocumentData,
-  QueryFieldFilterConstraint,
-  QueryOrderByConstraint,
-  addDoc,
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  where
-} from "firebase/firestore";
-import {
+import React, {
   ChangeEvent,
   Fragment,
   useContext,
@@ -18,18 +6,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
-import ListComponent from "../components/ListComponent/ListComponent";
-import NewFilm from "../components/NewFilm/NewFilm";
-import Pagination from "../components/Pagination/Pagination";
-import Search from "../components/Search/Search";
-import { AuthContext } from "../components/context/auth-context";
-import { firestoreDB } from "../config/firebaseConfig";
-import { useStoreSelector } from "../hooks/reduxHooks";
-import useHttp from "../hooks/use-http";
-import usePaginate from "../hooks/use-paginate";
-import { itemsActions } from "../store/itemsStore";
 import {
   IListFinalItem,
   IListItem,
@@ -37,20 +13,54 @@ import {
   listNameType,
 } from "../types/globalTypes";
 import {
-  deleteItem,
+  CollectionReference,
+  DocumentData,
+  QueryOrderByConstraint,
+  QueryFieldFilterConstraint,
+  collection,
+  orderBy,
+  where,
+  query,
+  onSnapshot,
+  addDoc,
+} from "firebase/firestore";
+import { useTranslation } from "react-i18next";
+import { useDispatch } from "react-redux";
+import ListComponent from "../components/ListComponent/ListComponent";
+import NewFilm from "../components/NewFilm/NewFilm";
+import Pagination from "../components/Pagination/Pagination";
+import { AuthContext } from "../components/context/auth-context";
+import { firestoreDB } from "../config/firebaseConfig";
+import { useStoreSelector } from "../hooks/reduxHooks";
+import useHttp from "../hooks/use-http";
+import usePaginate from "../hooks/use-paginate";
+import { itemsActions } from "../store/itemsStore";
+import {
   listItemsCount,
+  deleteItem,
   moveItemOver,
 } from "../utilities/functions";
+import Search from "../components/Search/Search";
 
-function BacklogListPage() {
+type CommonListPageProps = {
+  passedList: listNameType;
+};
+
+const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
   const dispatch = useDispatch();
-  const backlogList = useStoreSelector((state) => state.items.backlogList.list);
+  const itemsList = useStoreSelector((state) => state.items[passedList].list);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
   const [itemsCount, setItemsCount] = useState(0);
   const { isLoading, error } = useHttp();
-  const { currentPage, sliceTheList, setCurrentPage, pageNumbers, calcPageAmount } = usePaginate();
+  const {
+    currentPage,
+    sliceTheList,
+    setCurrentPage,
+    pageNumbers,
+    calcPageAmount,
+  } = usePaginate();
   const uid = authCtx.uid;
   const querryArgs: [
     CollectionReference<DocumentData, DocumentData>,
@@ -60,22 +70,26 @@ function BacklogListPage() {
   ] = [
     collection(firestoreDB, "items"),
     orderBy("createdAt", "desc"),
-    where("sublist", "==", "backlogList"),
+    where("sublist", "==", passedList),
     where("author", "==", uid),
   ];
 
-  const backlogListQuerry = query(...querryArgs);
+  const listQuerry = query(...querryArgs);
 
   useEffect(() => {
-    listItemsCount(backlogListQuerry).then((res) => setItemsCount(res));
-  }, []);
+    if (passedList !== "currentList") {
+      listItemsCount(listQuerry).then((res) => setItemsCount(res));
+    }
+  }, [passedList]);
 
   useEffect(() => {
-    calcPageAmount(itemsCount);
-  }, [itemsCount]);
+    if (passedList !== "currentList") {
+      calcPageAmount(itemsCount);
+    }
+  }, [itemsCount, passedList]);
 
   useEffect(() => {
-    const unsub = onSnapshot(backlogListQuerry, (snapshot) => {
+    const unsub = onSnapshot(listQuerry, (snapshot) => {
       const items: IListFinalItem[] = [];
       snapshot.forEach((doc) => {
         items.push({
@@ -83,22 +97,22 @@ function BacklogListPage() {
           title: doc.data().title,
           createdAt: doc.data().createdAt,
           author: doc.data().author,
-          list: doc.data().list,
+          passedList: doc.data().passedList,
           sublist: doc.data().sublist,
           ...(doc.data().comment && { comment: doc.data().comment }),
           ...(doc.data().rating && { rating: doc.data().rating }),
           ...(doc.data().updatedAt && { updatedAt: doc.data().updatedAt }),
         });
       });
-      dispatch(itemsActions.setList({ list: "backlogList", items }));
+      dispatch(itemsActions.setList({ list: passedList, items }));
     });
 
     return () => unsub();
-  }, []);
+  }, [passedList]);
 
   async function removeItemHandler(dataId: string) {
     await deleteItem(dataId);
-    setItemsCount((prev) => prev - 1);
+    if (passedList !== "currentList") setItemsCount((prev) => prev - 1);
   }
 
   const postFilmHandler: ListAndTitleFunction = (
@@ -114,15 +128,15 @@ function BacklogListPage() {
     };
 
     addDoc(collection(firestoreDB, "items"), itemInfo);
-    setItemsCount((prev) => prev + 1);
+    if (passedList !== "currentList") setItemsCount((prev) => prev + 1);
   };
 
-  const moveFilmOver = async (
+  const relistItem = async (
     newListName: listNameType,
     data: IListFinalItem
   ) => {
     await moveItemOver(newListName, data);
-    setItemsCount((prev) => prev - 1);
+    if (passedList !== "currentList") setItemsCount((prev) => prev - 1);
   };
 
   async function handleQueueSearch(event: ChangeEvent<HTMLInputElement>) {
@@ -132,14 +146,14 @@ function BacklogListPage() {
   const sortedFilms = useMemo(() => {
     if (queueSearch === "") {
       setFoundAmount(0);
-      return [...backlogList].sort((a, b) => b.createdAt - a.createdAt);
+      return [...itemsList].sort((a, b) => b.createdAt - a.createdAt);
     }
-    const sorted = [...backlogList].filter((item) =>
+    const sorted = [...itemsList].filter((item) =>
       item.title.toLowerCase().includes(queueSearch.toLowerCase())
     );
     setFoundAmount([...sorted].length);
     return sorted;
-  }, [backlogList, queueSearch]);
+  }, [itemsList, queueSearch]);
 
   const slicedList: IListFinalItem[] = useMemo(
     () => sliceTheList(sortedFilms),
@@ -148,21 +162,36 @@ function BacklogListPage() {
 
   const { t } = useTranslation();
 
+  const header = useMemo(() => {
+    switch (passedList) {
+      case "backlogList":
+        return `${t("pages.toWatchList.amount")}: ${itemsCount}`;
+      case "doneList":
+        return `${t("pages.watchedList.header")}: ${itemsCount ?? 0}`;
+      case "currentList":
+        return t("pages.currentList.header");
+      default:
+        return "";
+    }
+  }, [passedList, t, itemsCount]);
+
   return (
     <Fragment>
-      <NewFilm onAddFilm={postFilmHandler} />
-      <Search value={queueSearch} onChange={handleQueueSearch} />
+      {passedList === "backlogList" && <NewFilm onAddFilm={postFilmHandler} />}
+      {passedList !== "currentList" && (
+        <Search value={queueSearch} onChange={handleQueueSearch} />
+      )}
       <ListComponent
-        header={`${t("pages.toWatchList.amount")}: ${itemsCount}`}
+        header={header}
         found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
         isSearched={!!foundAmount}
         loading={isLoading}
         error={error}
         nothingInList={t("pages.toWatchList.empty")}
         items={slicedList}
-        listName="backlogList"
+        listName={passedList}
         removeItemHandler={removeItemHandler}
-        moveItemOver={moveFilmOver}
+        moveItemOver={relistItem}
       />
       {pageNumbers > 1 && (
         <Pagination
@@ -173,6 +202,5 @@ function BacklogListPage() {
       )}
     </Fragment>
   );
-}
-
-export default BacklogListPage;
+};
+export default CommonListPage;

@@ -5,10 +5,11 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContext } from "./components/context/auth-context";
 import Layout from "./components/layout/Layout";
 import store from "./store/store.ts";
+import CommonListPage from "./pages/CommonListPage.tsx";
 
-const BacklogListPage = React.lazy(() => import("./pages/BacklogListPage.tsx"));
-const DoneListPage = React.lazy(() => import("./pages/DoneListPage.tsx"));
-const CurrentListPage = React.lazy(() => import("./pages/CurrentListPage.tsx"));
+// const BacklogListPage = React.lazy(() => import("./pages/BacklogListPage.tsx"));
+// const DoneListPage = React.lazy(() => import("./pages/DoneListPage.tsx"));
+// const CurrentListPage = React.lazy(() => import("./pages/CurrentListPage.tsx"));
 const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 
 function App() {
@@ -26,9 +27,9 @@ function App() {
             {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
             {isLoggedIn && (
               <Fragment>
-                <Route path="/backlog-list" element={<BacklogListPage />} />
-                <Route path="/done-list" element={<DoneListPage />} />
-                <Route path="/current-list" element={<CurrentListPage />} />
+                <Route path="/backlog-list" element={<CommonListPage passedList="backlogList" />} />
+                <Route path="/done-list" element={<CommonListPage passedList="doneList" />} />
+                <Route path="/current-list" element={<CommonListPage passedList="currentList" />} />
               </Fragment>
             )}
           </Routes>

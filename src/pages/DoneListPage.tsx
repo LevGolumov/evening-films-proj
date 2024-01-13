@@ -28,7 +28,7 @@ import { useStoreSelector } from "../hooks/reduxHooks";
 import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
-import { IListFinalItem, IListItem } from "../types/globalTypes";
+import { IListFinalItem } from "../types/globalTypes";
 import { deleteItem, listItemsCount } from "../utilities/functions";
 
 function DoneListPage() {
@@ -120,12 +120,12 @@ function DoneListPage() {
     <Fragment>
       <Search value={queueSearch} onChange={handleQueueSearch} />
       <ListComponent
+        header={`${t("pages.watchedList.header")}: ${doneList.length ?? 0}`}
         found={`${t("pages.toWatchList.found")}: ${foundAmount}`}
         isSearched={!!foundAmount}
         nothingInList={t("pages.watchedList.nothingInList")}
         loading={isLoading}
         error={error}
-        header={`${t("pages.watchedList.header")}: ${doneList.length ?? 0}`}
         listName="doneList"
         items={slicedList}
         removeItemHandler={(id) => {
