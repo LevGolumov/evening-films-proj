@@ -1,11 +1,19 @@
 import {
+  CollectionReference,
+  DocumentData,
+  QueryFieldFilterConstraint,
+  QueryOrderByConstraint,
   addDoc,
   collection,
   deleteDoc,
   doc,
   getCountFromServer,
+  getDocs,
+  limit,
   onSnapshot,
+  orderBy,
   query,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { Fragment, useContext, useEffect, useMemo, useState } from "react";
@@ -19,12 +27,12 @@ import { AuthContext } from "../components/context/auth-context";
 import { firestoreDB } from "../config/firebaseConfig";
 import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
-import { itemsActions } from "../store/listsStore";
-import { IListItem, ListAndTitleFunction } from "../types/functionTypes";
+import { itemsActions } from "../store/itemsStore";
+import { IListItem, ISublist, ListAndTitleFunction, listNameType } from "../types/functionTypes";
 
 function ToWatchFilmsPage() {
   const dispatch = useDispatch();
-  const backlogList = useSelector((state) => state.items.backlogList.list);
+  const backlogList: IListItem[] = useSelector((state) => state.items.backlogList.list);
   const [queueSearch, setQueueSearch] = useState("");
   const [foundAmount, setFoundAmount] = useState(0);
   const authCtx = useContext(AuthContext);
@@ -33,11 +41,19 @@ function ToWatchFilmsPage() {
   const { isLoading, error } = useHttp();
   const { currentPage, sliceTheList, setCurrentPage } = usePaginate();
   const uid = authCtx.uid;
+  const querryArgs: [
+    CollectionReference<DocumentData, DocumentData>,
+    QueryOrderByConstraint,
+    QueryFieldFilterConstraint,
+    QueryFieldFilterConstraint
+  ] = [
+    collection(firestoreDB, "items"),
+    orderBy("createdAt", "desc"),
+    where("sublist", "==", "backlogList"),
+    where("author", "==", uid),
+  ];
 
-  const backlogListQuerry = query(
-    collection(firestoreDB, "lists", uid, "default"),
-    where("type", "==", "backlogList")
-  );
+  const backlogListQuerry = query(...querryArgs);
 
   useEffect(() => {
     getCountFromServer(backlogListQuerry).then((data) => {
@@ -55,8 +71,14 @@ function ToWatchFilmsPage() {
       snapshot.forEach((doc) => {
         items.push({
           id: doc.id,
-          item: doc.data().item,
+          title: doc.data().title,
           createdAt: doc.data().createdAt,
+          author: doc.data().author,
+          list: doc.data().list,
+          sublist: doc.data().sublist,
+          ...doc.data().comment && { comment: doc.data().comment },
+          ...doc.data().rating && { rating: doc.data().rating },
+          ...doc.data().updatedAt && { updatedAt: doc.data().updatedAt },
         });
       });
       dispatch(itemsActions.setList({ list: "backlogList", items }));
@@ -66,25 +88,34 @@ function ToWatchFilmsPage() {
   }, []);
 
   async function removeFilmHandler(dataId: string) {
-    await deleteDoc(doc(firestoreDB, "lists", uid, "default", dataId));
+    await deleteDoc(doc(firestoreDB, "items", dataId));
     setItemsCount((prev) => prev - 1);
   }
 
-  const postFilmHandler: ListAndTitleFunction = (listName, filmText) => {
-    addDoc(collection(firestoreDB, "lists", uid, "default"), {
-      item: filmText,
-      type: listName,
+  const postFilmHandler: ListAndTitleFunction = (listName: listNameType, filmText) => {
+    const itemInfo: IListItem = {
+      title: filmText,
+      sublist: listName,
       createdAt: new Date().getTime(),
-    });
+      author: uid,
+      list: 'default',
+      id: "" // generate beforehand by firebase
+    }
+
+    addDoc(collection(firestoreDB, "items"), itemInfo );
     setItemsCount((prev) => prev + 1);
   };
 
-  function moveFilmOver(prevListName, newListName, data) {
-    // removeFilmHandler(prevListName, data);
-    // postFilmHandler(newListName, data.film);
+  function moveFilmOver(newListName, data) {
+    const listUpd: ISublist = {
+      sublist: newListName,
+      updatedAt: new Date().getTime(),
+    }
+    updateDoc(doc(firestoreDB, "items", data.id), listUpd);
+    setItemsCount((prev) => prev - 1);
   }
 
-  function handleQueueSearch(event) {
+  async function handleQueueSearch(event) {
     setQueueSearch(event.target.value);
   }
 
@@ -94,13 +125,13 @@ function ToWatchFilmsPage() {
       return [...backlogList].sort((a, b) => b.createdAt - a.createdAt);
     }
     const sorted = [...backlogList].filter((item) =>
-      item.item.toLowerCase().includes(queueSearch.toLowerCase())
+      item.title.toLowerCase().includes(queueSearch.toLowerCase())
     );
     setFoundAmount([...sorted].length);
     return sorted;
   }, [backlogList, queueSearch]);
 
-  const slicedList = useMemo(
+  const slicedList: IListItem[] = useMemo(
     () => sliceTheList(sortedFilms),
     [sliceTheList, sortedFilms]
   );
@@ -121,8 +152,8 @@ function ToWatchFilmsPage() {
         items={slicedList}
         listName="backlogList"
         removeFilmHandler={removeFilmHandler}
-        toWatched={moveFilmOver.bind(null, "backlogList", "doneList")}
-        toCurrent={moveFilmOver.bind(null, "backlogList", "currentList")}
+        toWatched={moveFilmOver.bind(null, "doneList")}
+        toCurrent={moveFilmOver.bind(null, "currentList")}
       />
       {pageNumbers > 1 && (
         <Pagination

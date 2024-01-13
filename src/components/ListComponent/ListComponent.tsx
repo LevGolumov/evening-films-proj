@@ -47,7 +47,7 @@ const ListComponent = (props) => {
                   toCurrent={props.toCurrent.bind(null, item)}
                   onRemove={() => props.removeFilmHandler(item.id)}
                 >
-                  {item.item}
+                  {item.title}
                 </ListItem>
               ))
             : props.listName === "currentList"
@@ -56,18 +56,18 @@ const ListComponent = (props) => {
                   key={item.id}
                   listName={props.listName}
                   toWatched={props.toWatched.bind(null, item)}
-                  onRemove={props.removeFilmHandler.bind(null, item)}
+                  onRemove={() => props.removeFilmHandler(item.id)}
                 >
-                  {item.item}
+                  {item.title}
                 </ListItem>
               ))
             : props.items.map((item) => (
                 <ListItem
                   key={item.id}
                   listName={props.listName}
-                  onRemove={props.removeFilmHandler.bind(null, item)}
+                  onRemove={() => props.removeFilmHandler(item.id)}
                 >
-                  {item.item}
+                  {item.title}
                 </ListItem>
               ))}
         </ul>

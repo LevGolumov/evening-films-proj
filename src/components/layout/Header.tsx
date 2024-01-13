@@ -5,7 +5,7 @@ import { AuthContext } from "../context/auth-context";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { itemsActions } from "../../store/listsStore";
+import { itemsActions } from "../../store/itemsStore";
 import { auth } from "../../config/firebaseConfig";
 
 function Header() {

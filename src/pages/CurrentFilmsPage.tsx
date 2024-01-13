@@ -2,19 +2,32 @@ import ListComponent from "../components/ListComponent/ListComponent";
 import { Fragment, useState, useContext } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import useHttp from "../hooks/use-http";
-import { itemsActions } from "../store/listsStore";
-import NewCurrentFilm from "../components/currentList/NewCurrentFilm";
+import { itemsActions } from "../store/itemsStore";
+import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import { useEffect } from "react";
 import { AuthContext } from "../components/context/auth-context";
 import { useTranslation } from "react-i18next";
+import {
+  CollectionReference,
+  DocumentData,
+  QueryFieldFilterConstraint,
+  QueryOrderByConstraint,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where,
+} from "firebase/firestore";
+import { firestoreDB } from "../config/firebaseConfig";
+import { IListItem } from "../types/functionTypes";
 
 function CurrentFilmsPage() {
   const dispatch = useDispatch();
   const currentList = useSelector((state) => state.items.currentList.list);
   const backlogList = useSelector((state) => state.items.backlogList.list);
-  const authCtx = useContext(AuthContext)
-  const uid = authCtx.uid
-  const token = authCtx.token
+  const authCtx = useContext(AuthContext);
+  const uid = authCtx.uid;
+  const token = authCtx.token;
   const areCurrentFilmsFetched = useSelector(
     (state) => state.items.currentList.isFetched
   );
@@ -27,31 +40,76 @@ function CurrentFilmsPage() {
   const { sendRequests: removeFilm } = useHttp();
   const { sendRequests: submitFilm } = useHttp();
 
+  const querryArgs: [
+    CollectionReference<DocumentData, DocumentData>,
+    QueryOrderByConstraint,
+    QueryFieldFilterConstraint,
+    QueryFieldFilterConstraint
+  ] = [
+    collection(firestoreDB, "items"),
+    orderBy("updatedAt", "desc"),
+    where("sublist", "==", "currentList"),
+    where("author", "==", uid),
+  ];
+
+  const currentListQuerry = query(...querryArgs)
+
   useEffect(() => {
-    const transformFilms = (listName, filmsObj) => {
-      const loadedFilms = [];
+    const unsub = onSnapshot(currentListQuerry, (snapshot) => {
+      const items: IListItem[] = [];
+      snapshot.forEach((doc) => {
+        items.push({
+          id: doc.id,
+          title: doc.data().title,
+          createdAt: doc.data().createdAt,
+          author: doc.data().author,
+          list: doc.data().list,
+          sublist: doc.data().sublist,
+          ...doc.data().comment && { comment: doc.data().comment },
+          ...doc.data().rating && { rating: doc.data().rating },
+          ...doc.data().updatedAt && { updatedAt: doc.data().updatedAt },
+        });
+      });
+      dispatch(itemsActions.setList({ list: "currentList", items }));
+    });
 
-      for (const filmKey in filmsObj) {
-        loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
-      }
-      dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
-    };
+    return () => unsub();
+  }, []);
 
-    function fetchLists(listName) {
-      fetchFilms(
-        {
-          url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
-        },
-        transformFilms.bind(null, listName)
-      );
-    }
+  // useEffect(() => {
+  //   const transformFilms = (listName, filmsObj) => {
+  //     const loadedFilms = [];
 
-    if (!areToWatchFilmsFetched) {
-      fetchLists("backlogList");
-    } else if (!areCurrentFilmsFetched) {
-      fetchLists("currentList");
-    }
-  }, [fetchFilms, dispatch, areToWatchFilmsFetched, areCurrentFilmsFetched, uid, token]);
+  //     for (const filmKey in filmsObj) {
+  //       loadedFilms.push({ id: filmKey, film: filmsObj[filmKey].film });
+  //     }
+  //     dispatch(itemsActions.setList({ list: listName, films: loadedFilms }));
+  //   };
+
+  //   function fetchLists(listName) {
+  //     fetchFilms(
+  //       {
+  //         url: `${
+  //           import.meta.env.VITE_DATABASE_URL
+  //         }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+  //       },
+  //       transformFilms.bind(null, listName)
+  //     );
+  //   }
+
+  //   if (!areToWatchFilmsFetched) {
+  //     fetchLists("backlogList");
+  //   } else if (!areCurrentFilmsFetched) {
+  //     fetchLists("currentList");
+  //   }
+  // }, [
+  //   fetchFilms,
+  //   dispatch,
+  //   areToWatchFilmsFetched,
+  //   areCurrentFilmsFetched,
+  //   uid,
+  //   token,
+  // ]);
 
   function filmAddHandler(listName, film) {
     dispatch(itemsActions.addFilm({ list: listName, film: film }));
@@ -66,7 +124,9 @@ function CurrentFilmsPage() {
 
   async function removeFilmHandler(listName, data) {
     removeFilm({
-      url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}/${
+      url: `${
+        import.meta.env.VITE_DATABASE_URL
+      }/lists/${uid}/default/${listName.toLowerCase()}/${
         data.id
       }.json?auth=${token}`,
       method: "DELETE",
@@ -79,7 +139,9 @@ function CurrentFilmsPage() {
   function postFilmHandler(listName, filmText) {
     submitFilm(
       {
-        url: `${import.meta.env.VITE_DATABASE_URL}/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
+        url: `${
+          import.meta.env.VITE_DATABASE_URL
+        }/lists/${uid}/default/${listName.toLowerCase()}.json?auth=${token}`,
         method: "POST",
         body: { film: filmText },
         headers: {
@@ -109,7 +171,7 @@ function CurrentFilmsPage() {
     postFilmHandler("currentList", data.film);
     closeModalHanler();
   }
-  const {t} = useTranslation()
+  const { t } = useTranslation();
   return (
     <Fragment>
       {popup && (

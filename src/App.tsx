@@ -5,7 +5,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { AuthContext } from "./components/context/auth-context";
 import Layout from "./components/layout/Layout";
 import { auth } from "./config/firebaseConfig";
-import store from "./store/listsStore.ts";
+import store from "./store/store.ts";
 
 const ToWatchFilmsPage = React.lazy(() => import("./pages/ToWatchFilmsPage.tsx"));
 const WatchedFilmsPage = React.lazy(() => import("./pages/WatchedFilmsPage.tsx"));
