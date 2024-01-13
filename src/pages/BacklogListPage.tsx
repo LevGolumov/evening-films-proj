@@ -29,7 +29,7 @@ import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
 import { IListItem, ISublist, ListAndTitleFunction, listNameType } from "../types/functionTypes";
 
-function ToWatchFilmsPage() {
+function BacklogListPage() {
   const dispatch = useDispatch();
   const backlogList: IListItem[] = useStoreSelector((state) => state.items.backlogList.list);
   const [queueSearch, setQueueSearch] = useState("");
@@ -165,4 +165,4 @@ function ToWatchFilmsPage() {
   );
 }
 
-export default ToWatchFilmsPage;
+export default BacklogListPage;

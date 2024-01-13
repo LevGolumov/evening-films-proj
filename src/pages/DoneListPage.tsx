@@ -13,7 +13,7 @@ import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
 import { IListItem } from "../types/functionTypes";
 
-function WatchedFilmsPage() {
+function DoneListPage() {
   const dispatch = useDispatch();
 
   const authCtx = useContext(AuthContext);
@@ -118,4 +118,4 @@ function WatchedFilmsPage() {
   );
 }
 
-export default WatchedFilmsPage;
+export default DoneListPage;

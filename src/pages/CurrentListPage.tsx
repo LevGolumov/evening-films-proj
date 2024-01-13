@@ -21,19 +21,13 @@ import useHttp from "../hooks/use-http";
 import { itemsActions } from "../store/itemsStore";
 import { IListItem } from "../types/functionTypes";
 
-function CurrentFilmsPage() {
+function CurrentListPage() {
   const dispatch = useDispatch();
   const currentList = useStoreSelector((state) => state.items.currentList.list);
   const backlogList = useStoreSelector((state) => state.items.backlogList.list);
   const authCtx = useContext(AuthContext);
   const uid = authCtx.uid;
-  const token = authCtx.token;
-  const areCurrentFilmsFetched = useStoreSelector(
-    (state) => state.items.currentList.isFetched
-  );
-  const areToWatchFilmsFetched = useStoreSelector(
-    (state) => state.items.backlogList.isFetched
-  );
+  const token = authCtx.token;  
   const [popup, setPopup] = useState(false);
 
   const { isLoading, error, sendRequests: fetchFilms } = useHttp();
@@ -198,4 +192,4 @@ function CurrentFilmsPage() {
   );
 }
 
-export default CurrentFilmsPage;
+export default CurrentListPage;
