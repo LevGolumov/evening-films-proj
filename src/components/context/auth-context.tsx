@@ -1,42 +1,48 @@
 import React, { useState, useCallback } from "react";
 
+type AuthContextType = {
+  uid: string | null;
+  isLoggedIn: boolean;
+  login: (uid: string) => void;
+  logout: () => void;
+};
 
-export const AuthContext = React.createContext({
-  token: "",
+export const AuthContext = React.createContext<AuthContextType>({
+  // token: "",
   uid: "",
   isLoggedIn: false,
-  login: (token, uid) => {},
+  login: () => {},
   logout: () => {},
 });
 
-function AuthContextProvider(props) {
+function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const initialId = localStorage.getItem("uid");
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  // const [token, setToken] = useState(localStorage.getItem("token"));
   const [uid, setUid] = useState(initialId);
-  const isLoggedIn = !!token;
+  const isLoggedIn = !!uid;
 
   const logoutHandler = useCallback(() => {
-    setToken(undefined);
-    setUid(undefined);
-    localStorage.removeItem("token");
+    // setToken(undefined);
+    setUid(null);
+    // localStorage.removeItem("token");
     // localStorage.removeItem("expirationDate");
     localStorage.removeItem("uid");
     // localStorage.removeItem("refreshToken");
   }, []);
 
-  function loginHandler(token, localId) {
-    setToken(token);
+  function loginHandler(localId: string) {
+    // setToken(token);
     setUid(localId);
 
     // const expirationTime = new Date(new Date().getTime() + +expiration * 1000);
-    localStorage.setItem("token", token);
+    // localStorage.setItem("token", token);
     // localStorage.setItem("expirationDate", expirationTime.toISOString());
     localStorage.setItem("uid", localId);
     // localStorage.setItem("refreshToken", refreshToken);
   }
 
   const contextValue = {
-    token,
+    // token,
     isLoggedIn,
     uid,
     login: loginHandler,
@@ -44,9 +50,7 @@ function AuthContextProvider(props) {
   };
 
   return (
-    <AuthContext.Provider value={contextValue}>
-      {props.children}
-    </AuthContext.Provider>
+    <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
   );
 }
 

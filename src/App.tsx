@@ -63,7 +63,7 @@ function App() {
   useEffect(() => {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        authCtx.login(user.accessToken, user.uid)
+        authCtx.login(user.uid)
       } else {
         authCtx.logout()
       }
