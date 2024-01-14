@@ -1,3 +1,15 @@
+import {
+  CollectionReference,
+  DocumentData,
+  QueryFieldFilterConstraint,
+  QueryOrderByConstraint,
+  addDoc,
+  collection,
+  onSnapshot,
+  orderBy,
+  query,
+  where
+} from "firebase/firestore";
 import React, {
   ChangeEvent,
   Fragment,
@@ -6,30 +18,13 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import {
-  IListFinalItem,
-  IListItem,
-  ListAndTitleFunction,
-  listNameType,
-} from "../types/globalTypes";
-import {
-  CollectionReference,
-  DocumentData,
-  QueryOrderByConstraint,
-  QueryFieldFilterConstraint,
-  collection,
-  orderBy,
-  where,
-  query,
-  onSnapshot,
-  addDoc,
-  getDocs,
-} from "firebase/firestore";
 import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
+import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 import ListComponent from "../components/ListComponent/ListComponent";
 import NewFilm from "../components/NewFilm/NewFilm";
 import Pagination from "../components/Pagination/Pagination";
+import Search from "../components/Search/Search";
 import { AuthContext } from "../components/context/auth-context";
 import { firestoreDB } from "../config/firebaseConfig";
 import { useStoreSelector } from "../hooks/reduxHooks";
@@ -37,12 +32,16 @@ import useHttp from "../hooks/use-http";
 import usePaginate from "../hooks/use-paginate";
 import { itemsActions } from "../store/itemsStore";
 import {
-  listItemsCount,
+  IListFinalItem,
+  IListItem,
+  ListAndTitleFunction,
+  listNameType,
+} from "../types/globalTypes";
+import {
   deleteItem,
+  listItemsCount,
   moveItemOver,
 } from "../utilities/functions";
-import Search from "../components/Search/Search";
-import NewCurrentFilm from "../components/CurrentFilms/NewCurrentFilm";
 
 type CommonListPageProps = {
   passedList: listNameType;
