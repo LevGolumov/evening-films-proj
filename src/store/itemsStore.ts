@@ -40,7 +40,7 @@ const itemsSlice = createSlice({
       state[action.payload.list].isFetched = true;
     },
     logout(state) {
-      return (state = { ...itemsInitialState });
+      state = { ...itemsInitialState };
     },
     setParentList(state, action: PayloadAction<string>) {
       state.parentList = action.payload;
