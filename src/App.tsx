@@ -26,14 +26,14 @@ const LoginPage = React.lazy(() => import("./pages/LoginPage"));
 
 function App() {
   const authCtx = useContext(AuthContext);
-  const isLoggedIn = authCtx.isLoggedIn;
-  const rootNavigaton = isLoggedIn ? "/backlog-list" : "/login";
   const uid = authCtx.uid;
+  const isLoggedIn = !!uid;
+  const rootNavigaton = isLoggedIn ? "/backlog-list" : "/login";
   const { t } = useTranslation();
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (uid && isLoggedIn) {
+    if (uid) {
       const listsQuerryArgs: [
         CollectionReference<DocumentData, DocumentData>,
         QueryFieldFilterConstraint
@@ -58,7 +58,7 @@ function App() {
         dispatch(itemsActions.setParentList(querySnapshot.docs[0].id));
       });
     }
-  }, [uid, isLoggedIn]);
+  }, [uid]);
 
   useEffect(() => {
     auth.onAuthStateChanged((user) => {

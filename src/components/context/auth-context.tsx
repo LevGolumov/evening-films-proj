@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 
 type AuthContextType = {
   uid: string | null;
-  isLoggedIn: boolean;
   login: (uid: string) => void;
   logout: () => void;
 };
@@ -10,7 +9,6 @@ type AuthContextType = {
 export const AuthContext = React.createContext<AuthContextType>({
   // token: "",
   uid: "",
-  isLoggedIn: false,
   login: () => {},
   logout: () => {},
 });
@@ -19,7 +17,6 @@ function AuthContextProvider({ children }: { children: React.ReactNode }) {
   const initialId = localStorage.getItem("uid");
   // const [token, setToken] = useState(localStorage.getItem("token"));
   const [uid, setUid] = useState(initialId);
-  const isLoggedIn = !!uid;
 
   const logoutHandler = useCallback(() => {
     // setToken(undefined);
@@ -43,7 +40,6 @@ function AuthContextProvider({ children }: { children: React.ReactNode }) {
 
   const contextValue = {
     // token,
-    isLoggedIn,
     uid,
     login: loginHandler,
     logout: logoutHandler,

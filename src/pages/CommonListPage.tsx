@@ -66,7 +66,7 @@ const CommonListPage: React.FC<CommonListPageProps> = ({ passedList }) => {
     calcPageAmount,
     clearPages,
   } = usePaginate();
-  const uid = authCtx.uid;
+  const uid: string = authCtx.uid!;
   const itemsQuerryArgs: [
     CollectionReference<DocumentData, DocumentData>,
     QueryOrderByConstraint,
