@@ -12,7 +12,7 @@ function Header() {
   const { t, i18n } = useTranslation();
   const loginCtx = useContext(AuthContext);
   const dispatch = useDispatch()
-  const loginButtonText = loginCtx.isLoggedIn
+  const loginButtonText = loginCtx.uid
     ? t("header.logout")
     : t("header.login");
   
@@ -37,7 +37,7 @@ function Header() {
 
   const {pathname} = useLocation()
   
-  function pathBtnHighlight(btn){
+  function pathBtnHighlight(btn: string){
     if (pathname.includes(btn)){
       return "button--active"
     }
@@ -68,14 +68,14 @@ function Header() {
             {langBtn}            
           </span>
           <NavLink className={"header__nav--link header__logout"} to="/login">
-            <span onClick={loginCtx.isLoggedIn ? logoutHandler : undefined}>
+            <span onClick={loginCtx.uid ? logoutHandler : undefined}>
               {loginButtonText}
             </span>
           </NavLink>
         </nav>
       </header>
 
-      {loginCtx.isLoggedIn && (
+      {loginCtx.uid && (
         <div className={"header__buttons container"}>
           <NavLink to="/">
             <Button className={pathBtnHighlight('backlog-list')}>{t("lists.toWatch")}</Button>

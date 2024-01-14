@@ -2,10 +2,10 @@ import { Fragment } from "react";
 import Footer from "./Footer";
 import Header from "./Header";
 
-function Layout(props) {
+function Layout({children}: {children: React.ReactNode}) {
     return <Fragment>
         <Header />
-        <main>{props.children}</main>
+        <main>{children}</main>
         <Footer />
     </Fragment>;
 }

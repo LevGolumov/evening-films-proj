@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import { Fragment } from "react";
 import ReactDOM from "react-dom";
 

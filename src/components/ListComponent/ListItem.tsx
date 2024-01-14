@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Fragment } from "react";
 import { useTranslation } from "react-i18next";
 

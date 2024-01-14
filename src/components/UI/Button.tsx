@@ -1,3 +1,4 @@
+// @ts-nocheck
 function Button(props) {
   return (
     <button
