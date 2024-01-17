@@ -1,6 +1,5 @@
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import "./index.min.css";
 import App from "./App";
 import AuthContextProvider from "./components/context/auth-context";
 import "./i18n"
