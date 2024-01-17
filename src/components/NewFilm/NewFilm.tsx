@@ -1,7 +1,7 @@
 import { FC } from "react";
 import useHttp from "../../hooks/use-http";
 import { ListAndTitleFunction } from "../../types/globalTypes";
-import Section from "../UI/Section";
+import Section from "../ui/Section";
 import FilmForm from "./FilmForm";
 
 type NewFilmProps = {

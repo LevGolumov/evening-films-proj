@@ -16,8 +16,8 @@ import { useTranslation } from "react-i18next";
 import { firestoreDB } from "../../config/firebaseConfig";
 import { IListFinalItem, IListItem } from "../../types/globalTypes";
 import { moveItemOverType } from "../../utilities/functions";
-import Button from "../UI/Button";
-import Modal from "../UI/Modal";
+import Button from "../ui/Button";
+import Modal from "../ui/Modal";
 import classes from "./NewCurrentFilm.module.css";
 
 type NewCurrentFilmProps = {

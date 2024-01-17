@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import { IListFinalItem, listNameType } from "../../types/globalTypes";
 import { moveItemOverType } from "../../utilities/functions";
-import Button from "../UI/Button";
-import Section from "../UI/Section";
+import Button from "../ui/Button";
+import Section from "../ui/Section";
 import classes from "./ListComponent.module.css";
 import ListItem from "./ListItem";
 

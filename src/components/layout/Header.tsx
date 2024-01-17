@@ -1,4 +1,4 @@
-import Button from "../UI/Button";
+import Button from "../ui/Button";
 import { NavLink, useLocation } from "react-router-dom";
 import { Fragment, useContext } from "react";
 import { AuthContext } from "../context/auth-context";

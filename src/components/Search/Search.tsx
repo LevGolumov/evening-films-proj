@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { useTranslation } from "react-i18next";
-import Section from "../UI/Section";
+import Section from "../ui/Section";
 
 function Search(props) {
     const {t} = useTranslation()
