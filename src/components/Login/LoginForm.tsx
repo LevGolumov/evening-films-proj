@@ -39,8 +39,8 @@ function LoginForm() {
   }
 
   return (
-    <section className={"auth"}>
-      <h1>{isLogin ? t("login.login") : t("signUp.signUp")}</h1>
+    <section className="m-auto mt-12 max-w-96 rounded-md bg-stone-800 p-4 text-center">
+      <h1 className="text-xl">{isLogin ? t("login.login") : t("signUp.signUp")}</h1>
       <form onSubmit={submitHandler}>
         <div className={"control"}>
           <label htmlFor="email">{t("login.enterEmail")}</label>

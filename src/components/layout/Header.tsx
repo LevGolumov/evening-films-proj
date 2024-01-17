@@ -59,14 +59,14 @@ function Header() {
 
   return (
     <Fragment>
-      <header className={"header"}>
-        <nav className={"header__nav container"}>
-          <NavLink className={"header__nav--link"} to="/">
-            <div className="nav__title">ToBinge</div>
+      <header className='bg-sky-900 text-white px-24 py-5'>
+        <nav className={"flex justify-between"}>
+          <NavLink className='' to="/">
+            <div className="text-xl">Unlist</div>
           </NavLink>
-          <span className={"header__langChoise"} onClick={changeLanguage}>
+          {/* <span className={"header__langChoise"} onClick={changeLanguage}>
             {langBtn}            
-          </span>
+          </span> */}
           <NavLink className={"header__nav--link header__logout"} to="/login">
             <span onClick={loginCtx.uid ? logoutHandler : undefined}>
               {loginButtonText}

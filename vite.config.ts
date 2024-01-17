@@ -1,11 +1,17 @@
-import { defineConfig} from 'vite';
 import react from '@vitejs/plugin-react';
-import viteTsconfigPaths from 'vite-tsconfig-paths';
+import tailwindcss from "tailwindcss";
+import { defineConfig } from 'vite';
 import svgrPlugin from 'vite-plugin-svgr';
-import checker from 'vite-plugin-checker';
+import viteTsconfigPaths from 'vite-tsconfig-paths';
+import path from "path";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  css:{
+    postcss: {
+      plugins:[tailwindcss()]
+    }
+  },
   plugins: [
     react(),
     // checker({
@@ -24,5 +30,10 @@ export default defineConfig({
     //   '/api-server/': '...',
     //   '/authorization/': '...',
     // },
+  },  
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src"),
+    },
   },
 });
