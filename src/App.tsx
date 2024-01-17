@@ -18,6 +18,7 @@ import { auth, firestoreDB } from "./config/firebaseConfig.ts";
 import { useDispatch } from "react-redux";
 import { itemsActions } from "./store/itemsStore.ts";
 import { IParentList } from "./types/globalTypes.ts";
+import MainPage from "./pages/MainPage.tsx";
 
 // const BacklogListPage = React.lazy(() => import("./pages/BacklogListPage.tsx"));
 // const DoneListPage = React.lazy(() => import("./pages/DoneListPage.tsx"));
@@ -75,6 +76,7 @@ function App() {
     <Layout>
       <Suspense fallback={<p>{t("techActions.loading")}...</p>}>
         <Routes>
+          <Route path="/" element={<MainPage />} />
           <Route path="*" element={<Navigate replace to={rootNavigaton} />} />
           {!isLoggedIn && <Route path="/login" element={<LoginPage />} />}
           {isLoggedIn && (
