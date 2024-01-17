@@ -20,4 +20,6 @@ src/constants.js
 /build
 *dist/*
 
-*firebase*
+.firebase*
+firebase.json
+
